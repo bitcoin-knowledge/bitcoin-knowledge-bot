@@ -30,12 +30,15 @@ def generate(prompts):
                         re.sub(" +", ' ', strdecode_completion)
                         final_prompt = clean(strdecode_prompt)
                         final_completion = clean(strdecode_completion)
+                        unique_prompts = set()
+                        unique_completions = set()
                         if final_prompt != False and final_completion != False:
-                            j = {
-                                "prompt": f"{final_prompt}\n\n###\n\n",
-                                "completion": final_completion
-                            }
-                            openai_data.add(j)
+                            if final_prompt not in unique_prompts and final_completion not in unique_completions:
+                                j = {
+                                    "prompt": f"{final_prompt}\n\n###\n\n",
+                                    "completion": final_completion
+                                }
+                                openai_data.add(j)
 
         except:
             print("Error")
