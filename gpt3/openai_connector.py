@@ -23,3 +23,6 @@ class OpenAIConnector:
         file=open(self.prepared_filepath),
         purpose='fine-tune'
         )
+
+test = OpenAIConnector(token="", filepath="./datasets/openai_datasets/bitcoin_chatbot_training_data.jsonl", model_name="", prepare=True, prepared_filepath="")
+test.prepare_fine_tune_dataset()

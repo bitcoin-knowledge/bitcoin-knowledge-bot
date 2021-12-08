@@ -4,7 +4,7 @@ import re
 from .clean_text import clean
 
 def generate(prompts):
-    openai_data = []
+    openai_data = set()
     for count in range(len(prompts)):
         try:
             # Only create the object every other iteration
@@ -35,7 +35,7 @@ def generate(prompts):
                                 "prompt": f"{final_prompt}\n\n###\n\n",
                                 "completion": final_completion
                             }
-                            openai_data.append(j)
+                            openai_data.add(j)
 
         except:
             print("Error")
