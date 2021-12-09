@@ -4,7 +4,7 @@ import re
 from .clean_text import clean
 
 def generate(prompts):
-    openai_data = set()
+    openai_data = []
     for count in range(len(prompts)):
         try:
             # Only create the object every other iteration
@@ -30,15 +30,13 @@ def generate(prompts):
                         re.sub(" +", ' ', strdecode_completion)
                         final_prompt = clean(strdecode_prompt)
                         final_completion = clean(strdecode_completion)
-                        unique_prompts = set()
-                        unique_completions = set()
                         if final_prompt != False and final_completion != False:
-                            if final_prompt not in unique_prompts and final_completion not in unique_completions:
-                                j = {
-                                    "prompt": f"{final_prompt}\n\n###\n\n",
-                                    "completion": final_completion
-                                }
-                                openai_data.add(j)
+                            j = {
+                                "prompt": f"Human: {final_prompt}\n\n###\n\n",
+                                "completion": f" {final_completion}"
+                            }
+                            openai_data.append(j)
+                                
 
         except:
             print("Error")

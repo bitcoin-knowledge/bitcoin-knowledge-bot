@@ -6,7 +6,7 @@ if __name__ == '__main__':
     try:
         Mastering_bitcoin_scrape.scrape()
         Chow_collection_scrape.scrape()
-        Nakamoto_institute_articles.scrape() 
+        Nakamoto_institute_articles.scrape()
     except Exception as e:
         print("Error")
         print()
