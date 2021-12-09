@@ -32,7 +32,7 @@ def generate(prompts):
                         final_completion = clean(strdecode_completion)
                         if final_prompt != False and final_completion != False:
                             j = {
-                                "prompt": f"Human: {final_prompt}\n\n###\n\n",
+                                "prompt": f"Human:{final_prompt}\n\n###\n\n",
                                 "completion": f" {final_completion}"
                             }
                             openai_data.append(j)
