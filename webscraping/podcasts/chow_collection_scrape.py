@@ -10,7 +10,7 @@ from selenium.webdriver.support.expected_conditions import presence_of_all_eleme
 # articles that arent podcast transcripts
 article_blacklist = ["A Private Collector’s Guide to Art Collecting", "An introduction to /r/privatestudyrooms", 
 'Step-by-step: Documenting Anthony Gunin’s creation of The Most Holy Theotokos “Glykophilousa” icon', "Legacy",
-"Thoughts on Art Collecting", "Christ Pantocrator mosaic by Yury Yarin"]
+"Thoughts on Art Collecting", "Christ Pantocrator mosaic by Yury Yarin", "AH & Deater"]
 article_links = []
 data = []
 
