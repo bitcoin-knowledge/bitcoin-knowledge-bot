@@ -1,6 +1,7 @@
-import subprocess
+import re
 import os
 import openai
+import json
 from dotenv import load_dotenv
 
 class OpenAIConnector:
@@ -37,3 +38,51 @@ class OpenAIConnector:
         print(new_model)
 
         return new_model
+
+    # Clean and continually write to training file as text lists are fed in and filtered
+    def clean_text(self, text_list):
+        openai_data = []
+        for count in range(len(text_list)):
+            try:
+                # Only create the object every other iteration
+                if count % 2 == 0:
+                    if text_list[count].text != "" and text_list[count+1].text != "":
+                        prompt_text = text_list[count].text
+                        completion_text = text_list[count+1].text
+                        # Get rid of any text that is shorter than 50 chars
+                        # Get rid of any text that has no whitespace in it
+                        if len(prompt_text) > 50 and prompt_text.find(" ") != -1 and len(completion_text) > 50 and completion_text.find(" ") != -1:
+                            # Remove all non ascii chars
+                            # prompts
+                            strencode_prompt = prompt_text.encode("ascii", "ignore")
+                            strdecode_prompt = strencode_prompt.decode()
+                            # completions
+                            strencode_completion = completion_text.encode("ascii", "ignore")
+                            strdecode_completion = strencode_completion.decode()
+                            # Filter out any string with more than one white space in between characters
+                            re.sub(" +", ' ', strdecode_prompt)
+                            re.sub(" +", ' ', strdecode_completion)
+                            final_prompt = self.filter_text(strdecode_prompt)
+                            final_completion = self.filter_text(strdecode_completion)
+                            if final_prompt != False and final_completion != False:
+                                j = {
+                                    "prompt": f"{final_prompt}\n\n###\n\n",
+                                    "completion": " " + final_completion
+                                }
+                                openai_data.append(j)                   
+
+            except:
+                print("Error")
+        # Continually write to training file
+        with open('./datasets/openai_datasets/bitcoin_chatbot_training_data.jsonl', 'a') as outfile:    
+            for obj in openai_data:
+                json.dump(obj, outfile)
+                outfile.write('\n')
+
+
+    def filter_text(text):
+        num_of_letters = len(text) - text.count(" ")
+        if text.count(" ") < num_of_letters:
+            return text
+        else:
+            return False
