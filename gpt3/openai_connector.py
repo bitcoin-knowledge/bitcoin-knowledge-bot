@@ -70,9 +70,9 @@ class OpenAIConnector:
                                     "completion": " " + final_completion
                                 }
                                 openai_data.append(j)                   
-
             except:
                 print("Error")
+
         # Continually write to training file
         with open('./datasets/openai_datasets/bitcoin_chatbot_training_data.jsonl', 'a') as outfile:    
             for obj in openai_data:
