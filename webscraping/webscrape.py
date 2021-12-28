@@ -26,6 +26,7 @@ class Webscrape:
     def mastering_bitcoin_sraper(self):
         articles = []
         parent_articles = []
+        mastering_bitcoin_cover = 'https://github.com/bitcoinbook/bitcoinbook/blob/develop/images/cover.png?raw=true'
         with webdriver.Firefox() as driver:
             driver.get(self.parent_urls['mastering_bitcoin'][0])
             parent_pages = driver.find_elements_by_xpath("//a[@href]")
@@ -36,7 +37,7 @@ class Webscrape:
 
             for article in parent_articles:
                 driver.get(article)
-                articles.append({'title': driver.find_element_by_xpath("//h2").text, 'url': article})
+                articles.append({'title': driver.find_element_by_xpath("//h2").text, 'url': article, 'image': mastering_bitcoin_cover})
         return articles
 
     def chow_collection_sraper(self):
@@ -54,11 +55,12 @@ class Webscrape:
                 articles = driver.find_elements_by_xpath("//a[@class='eh bw']")
                 for article in articles:
                     driver.get(article.get_attribute("href"))
-                    articles.append({'title': driver.find_element_by_xpath("//h1").text, 'url': article.get_attribute("href")})
+                    articles.append({'title': driver.find_element_by_xpath("//h1").text, 'url': article.get_attribute("href"), 'image': driver.find_element_by_xpath("//img[@class='v gx ll']").get_attribute("src") if driver.find_element_by_xpath("//img[@class='v gx ll']") else None})
         return articles
 
     def nakamoto_institute_sraper(self):
         articles = []
+        pages = []
         driver = webdriver.Firefox()
         with webdriver.Firefox() as driver:
             for knowledge_source in self.parent_urls['nakamoto_institute']:
@@ -77,5 +79,18 @@ class Webscrape:
                     anchors = driver.find_elements_by_xpath("//a[@href]")
                     for link in anchors:
                         if link.text == "HTML":
-                            articles.append(link.get_attribute('href'))
+                            pages.append(link.get_attribute('href'))
+
+            for article in articles:
+                with webdriver.Firefox() as driver:
+                    driver.get(article)
+                    title = driver.find_element_by_xpath("//h1").text
+                    image = driver.find_element_by_xpath("//img").get_attribute("src") if driver.find_element_by_xpath("//img[@class='v gx ll']") else None
+                    obj = {
+                        'title': title,
+                        'url': article,
+                        'image': image,
+                    }
+                    articles.append(obj)
+                    driver.close()
         return articles
