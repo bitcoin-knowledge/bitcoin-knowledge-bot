@@ -5,9 +5,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.expected_conditions import presence_of_all_elements_located
 
 class Webscrape:
-    def __init__(self, additional_urls: list = [], blacklisted_articles: list = []):
+    def __init__(self, additional_urls: list = [], additional_blacklisted_articles: list = []):
         self.additional_urls = additional_urls
-        self.blacklisted_articles = [*blacklisted_articles, "A Private Collector’s Guide to Art Collecting", "An introduction to /r/privatestudyrooms", 
+        self.blacklisted_articles = [*additional_blacklisted_articles, "A Private Collector’s Guide to Art Collecting", "An introduction to /r/privatestudyrooms", 
         'Step-by-step: Documenting Anthony Gunin’s creation of The Most Holy Theotokos “Glykophilousa” icon', "Legacy",
         "Thoughts on Art Collecting", "Christ Pantocrator mosaic by Yury Yarin", "AH & Deater"]
         self.parent_urls = {
@@ -18,12 +18,10 @@ class Webscrape:
 
     def get_urls(self):
         urls = []
-        for url in urls:
-            if url in self.blacklisted_urls:
-                continue
-            yield url
+        urls.append(self.nakamoto_institute_scraper())
+        print(urls)
 
-    def mastering_bitcoin_sraper(self):
+    def mastering_bitcoin_scraper(self):
         articles = []
         parent_articles = []
         mastering_bitcoin_cover = 'https://github.com/bitcoinbook/bitcoinbook/blob/develop/images/cover.png?raw=true'
@@ -40,7 +38,7 @@ class Webscrape:
                 articles.append({'title': driver.find_element_by_xpath("//h2").text, 'url': article, 'image': mastering_bitcoin_cover})
         return articles
 
-    def chow_collection_sraper(self):
+    def chow_collection_scraper(self):
         articles = []
         with webdriver.Firefox() as driver:
             wait = WebDriverWait(driver, 10)
@@ -58,7 +56,7 @@ class Webscrape:
                     articles.append({'title': driver.find_element_by_xpath("//h1").text, 'url': article.get_attribute("href"), 'image': driver.find_element_by_xpath("//img[@class='v gx ll']").get_attribute("src") if driver.find_element_by_xpath("//img[@class='v gx ll']") else None})
         return articles
 
-    def nakamoto_institute_sraper(self):
+    def nakamoto_institute_scraper(self):
         articles = []
         pages = []
         driver = webdriver.Firefox()
@@ -70,7 +68,7 @@ class Webscrape:
                     anchors = driver.find_elements_by_xpath("//a[@href]")
                     for link in anchors:
                         # Avoid blacklisted urls and links to the series pages
-                        if link.get_attribute('href') in self.blacklisted_urls or 'https://nakamotoinstitute.org/mempool/series/' in link.get_attribute('href'):
+                        if link.get_attribute('href') in self.blacklisted_articles or 'https://nakamotoinstitute.org/mempool/series/' in link.get_attribute('href'):
                             pass
                         elif 'https://nakamotoinstitute.org/mempool/' in link.get_attribute('href'):
                             articles.append(link.get_attribute('href'))
@@ -85,7 +83,7 @@ class Webscrape:
                 with webdriver.Firefox() as driver:
                     driver.get(article)
                     title = driver.find_element_by_xpath("//h1").text
-                    image = driver.find_element_by_xpath("//img").get_attribute("src") if driver.find_element_by_xpath("//img[@class='v gx ll']") else None
+                    image = driver.find_element_by_xpath("//img").get_attribute("src") if driver.find_element_by_xpath("//img") else None
                     obj = {
                         'title': title,
                         'url': article,
@@ -94,3 +92,6 @@ class Webscrape:
                     articles.append(obj)
                     driver.close()
         return articles
+
+test = Webscrape()
+print(test.get_urls())
