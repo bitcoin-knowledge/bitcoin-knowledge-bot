@@ -2,7 +2,7 @@ import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support.expected_conditions import presence_of_all_elements_located
+from selenium.webdriver.support.expected_conditions import presence_of_all_elements_located, presence_of_element_located
 
 class Webscrape:
     def __init__(self, additional_urls: list = [], additional_blacklisted_articles: list = []):
@@ -18,7 +18,10 @@ class Webscrape:
 
     def get_urls(self):
         urls = []
-        urls.append(self.mastering_bitcoin_scraper())
+        try:
+            urls.append(self.chow_collection_scraper())
+        except Exception as e:
+            print(e)          
         print(urls)
 
     def mastering_bitcoin_scraper(self):
@@ -40,6 +43,7 @@ class Webscrape:
         return articles
 
     def chow_collection_scraper(self):
+        article_links = []
         articles = []
         with webdriver.Firefox() as driver:
             wait = WebDriverWait(driver, 10)
@@ -48,13 +52,20 @@ class Webscrape:
             try:
                 while driver.find_element_by_xpath("// button[contains(text(),'Show more')]"):
                     driver.find_element_by_xpath("// button[contains(text(),'Show more')]").click()
-                    time.sleep(10)
+                    time.sleep(7)
             except:
                 wait.until(presence_of_all_elements_located((By.XPATH, "//a[@class='eh bw']")))
-                articles = driver.find_elements_by_xpath("//a[@class='eh bw']")
-                for article in articles:
-                    driver.get(article.get_attribute("href"))
-                    articles.append({'title': driver.find_element_by_xpath("//h1").text, 'url': article.get_attribute("href"), 'image': driver.find_element_by_xpath("//img[@class='v gx ll']").get_attribute("src") if driver.find_element_by_xpath("//img[@class='v gx ll']") else None})
+                article_pages = driver.find_elements_by_xpath("//a[@class='eh bw']")
+                for article in article_pages:
+                    article_links.append(article.get_attribute("href"))
+
+            for article in article_links:
+                driver.get(article)
+                # Want to grab the podcast images eventually if avilable
+                image = None
+                title = driver.find_element_by_xpath("//h1").text
+                articles.append({'title': title, 'url': article, 'image': image})
+            
         return articles
 
     def nakamoto_institute_scraper(self):
