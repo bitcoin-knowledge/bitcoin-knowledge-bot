@@ -18,7 +18,7 @@ class Webscrape:
 
     def get_urls(self):
         urls = []
-        urls.append(self.nakamoto_institute_scraper())
+        urls.append(self.mastering_bitcoin_scraper())
         print(urls)
 
     def mastering_bitcoin_scraper(self):
@@ -35,7 +35,8 @@ class Webscrape:
 
             for article in parent_articles:
                 driver.get(article)
-                articles.append({'title': driver.find_element_by_xpath("//h2").text, 'url': article, 'image': mastering_bitcoin_cover})
+                chapter = driver.find_elements_by_xpath("//h2")
+                articles.append({'title': "Mastering bitcoin - " + chapter[1].text, 'url': article, 'image': mastering_bitcoin_cover})
         return articles
 
     def chow_collection_scraper(self):
@@ -94,4 +95,4 @@ class Webscrape:
         return articles
 
 test = Webscrape()
-print(test.get_urls())
+test.get_urls()
