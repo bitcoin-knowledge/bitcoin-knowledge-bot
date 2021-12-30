@@ -18,10 +18,7 @@ class Webscrape:
 
     def get_urls(self):
         urls = []
-        try:
-            urls.append(self.chow_collection_scraper())
-        except Exception as e:
-            print(e)          
+        urls.append(self.chow_collection_scraper())          
         print(urls)
 
     def mastering_bitcoin_scraper(self):
