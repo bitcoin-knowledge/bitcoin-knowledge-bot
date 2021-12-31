@@ -18,7 +18,7 @@ class Webscrape:
 
     def get_urls(self):
         urls = []
-        urls.append(self.chow_collection_scraper())          
+        urls.append(self.nakamoto_institute_scraper())
         print(urls)
 
     def mastering_bitcoin_scraper(self):
@@ -68,6 +68,9 @@ class Webscrape:
     def nakamoto_institute_scraper(self):
         articles = []
         pages = []
+        # Speicifc nakamoto pages we need to ignore
+        blacklisted_pages = ['https://nakamotoinstitute.org/mempool/authors', 'https://nakamotoinstitute.org/mempool/series', 'https://nakamotoinstitute.org/mempool/feed/', 
+        'https://nakamotoinstitute.org/', 'https://satoshi.nakamotoinstitute.org/', 'https://nakamotoinstitute.org/mempool/']
         driver = webdriver.Firefox()
         with webdriver.Firefox() as driver:
             for knowledge_source in self.parent_urls['nakamoto_institute']:
@@ -77,10 +80,10 @@ class Webscrape:
                     anchors = driver.find_elements_by_xpath("//a[@href]")
                     for link in anchors:
                         # Avoid blacklisted urls and links to the series pages
-                        if link.get_attribute('href') in self.blacklisted_articles or 'https://nakamotoinstitute.org/mempool/series/' in link.get_attribute('href'):
+                        if link.get_attribute('href') in blacklisted_pages or 'https://nakamotoinstitute.org/mempool/series/' in link.get_attribute('href'):
                             pass
                         elif 'https://nakamotoinstitute.org/mempool/' in link.get_attribute('href'):
-                            articles.append(link.get_attribute('href'))
+                            pages.append(link.get_attribute('href'))
                 else:
                     # Get all articles that are hosted as HTML pages
                     anchors = driver.find_elements_by_xpath("//a[@href]")
@@ -88,8 +91,9 @@ class Webscrape:
                         if link.text == "HTML":
                             pages.append(link.get_attribute('href'))
 
-            for article in articles:
+            for article in pages:
                 with webdriver.Firefox() as driver:
+                    print(article)
                     driver.get(article)
                     title = driver.find_element_by_xpath("//h1").text
                     image = driver.find_element_by_xpath("//img").get_attribute("src") if driver.find_element_by_xpath("//img") else None
