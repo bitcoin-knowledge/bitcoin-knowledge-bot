@@ -19,6 +19,8 @@ class Webscrape:
     def get_urls(self):
         urls = []
         urls.append(self.nakamoto_institute_scraper())
+        urls.append(self.mastering_bitcoin_scraper())
+        urls.append(self.chow_collection_scraper())
         print(urls)
 
     def mastering_bitcoin_scraper(self):
@@ -93,7 +95,6 @@ class Webscrape:
 
             for article in pages:
                 with webdriver.Firefox() as driver:
-                    print(article)
                     driver.get(article)
                     title = driver.find_element_by_xpath("//h1").text
                     image = driver.find_element_by_xpath("//img").get_attribute("src") if driver.find_element_by_xpath("//img") else None
