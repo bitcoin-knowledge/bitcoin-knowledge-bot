@@ -2,7 +2,7 @@ import React from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import Styled from 'styled-components';
 import ReactLoading from 'react-loading';
-import {FaRobot} from 'react-icons/fa'
+import {FaRobot, FaUserAlt} from 'react-icons/fa'
 import { v4 as uuidv4 } from 'uuid';
 import './Chatbot.css'
 
@@ -22,10 +22,17 @@ const MessageList = ({messages, bottomListRef, loading, collapsed}) => {
             {messages.map((message) => {
               return(
                 <li key={uuidv4()} className={message.name === "User" ? "chat-message-user" : "chat-message"}>
+                  {message.name === "User" ?
+                  <ChatImage>
+                    <FaUserAlt style={{fontSize: '1rem', marginTop: '3%'}} />
+                    <ChatUser>{message.name}</ChatUser>
+                  </ChatImage>
+                  :
                   <ChatImage>
                     <FaRobot style={{fontSize: '1.2rem'}} />
                     <ChatUser>{message.name}</ChatUser>
                   </ChatImage>
+                  }
                   <ChatMessage>{message.text}</ChatMessage>
                 </li>
               )
@@ -66,10 +73,9 @@ const ChatMessage = Styled.div`
 `;
 
 const ChatUser = Styled.div`
-    margin-top: 0.5%;
     margin-bottom: 0%;
     text-align: start;
-    margin-left: 10%;
+    margin-left: 10px;
 `;
 
 const ChatImage = Styled.div`
