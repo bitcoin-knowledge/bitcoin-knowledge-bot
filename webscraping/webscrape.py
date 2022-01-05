@@ -1,4 +1,5 @@
 import time
+import json
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -16,12 +17,31 @@ class Webscrape:
             'chow_collection': ['https://chowcollection.medium.com'],
         }
 
-    def get_urls(self):
+    def generate_data(self):
+        articles = self.get_articles()
+        formated_data = []
+        for article in articles:
+            url = article['url']
+            with webdriver.Firefox() as driver:
+                driver.get(url)
+                try:
+                    text_content = driver.find_elements_by_xpath("//p")
+                    for section in text_content:
+                        formated_data.append({'title': article['title'], 'url': url, 'body': section.text, 'image': article['image']})
+                except:
+                    print("Error loading article: " + article['title'])
+
+        with open('test_data.json', 'w') as outfile:
+            for article in formated_data:
+                json.dump(article, outfile)
+                outfile.write('\n')
+
+    def get_articles(self):
         urls = []
         urls.append(self.nakamoto_institute_scraper())
         urls.append(self.mastering_bitcoin_scraper())
         urls.append(self.chow_collection_scraper())
-        print(urls)
+        return urls
 
     def mastering_bitcoin_scraper(self):
         articles = []
@@ -108,4 +128,4 @@ class Webscrape:
         return articles
 
 test = Webscrape()
-test.get_urls()
+test.generate_data()
