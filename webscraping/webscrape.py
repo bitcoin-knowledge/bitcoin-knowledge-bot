@@ -21,26 +21,27 @@ class Webscrape:
         articles = self.get_articles()
         formated_data = []
         for article in articles:
-            url = article['url']
             with webdriver.Firefox() as driver:
-                driver.get(url)
+                wait = WebDriverWait(driver, 1)
+                driver.get(article['url'])
+                wait.until(presence_of_all_elements_located((By.XPATH, "//p")))
                 try:
                     text_content = driver.find_elements_by_xpath("//p")
                     for section in text_content:
-                        formated_data.append({'title': article['title'], 'url': url, 'body': section.text, 'image': article['image']})
+                        formated_data.append({'title': article['title'], 'url': article['url'], 'body': section.text, 'image': article['image']})
                 except:
                     print("Error loading article: " + article['title'])
 
-        with open('test_data.json', 'w') as outfile:
+        with open('./datasets/knowledge_datasets/bitcoin_knowledge.json', 'w') as outfile:
             for article in formated_data:
                 json.dump(article, outfile)
                 outfile.write('\n')
 
     def get_articles(self):
-        urls = []
-        urls.append(self.nakamoto_institute_scraper())
-        urls.append(self.mastering_bitcoin_scraper())
-        urls.append(self.chow_collection_scraper())
+        nakamoto_urls = self.nakamoto_institute_scraper()
+        mastering_bitcoin_urls = self.mastering_bitcoin_scraper()
+        chow_collection_urls = self.chow_collection_scraper()
+        urls = mastering_bitcoin_urls + chow_collection_urls + nakamoto_urls
         return urls
 
     def mastering_bitcoin_scraper(self):
