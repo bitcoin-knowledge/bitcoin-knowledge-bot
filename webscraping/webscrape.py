@@ -1,5 +1,6 @@
 import time
 import json
+import re
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -28,7 +29,10 @@ class Webscrape:
                 try:
                     text_content = driver.find_elements_by_xpath("//p")
                     for section in text_content:
-                        formated_data.append({'title': article['title'], 'url': article['url'], 'body': section.text, 'image': article['image']})
+                        cleaned_text = self.clean_text(section.text)
+                        if cleaned_text == False:
+                            pass
+                        formated_data.append({'title': article['title'], 'url': article['url'], 'body': cleaned_text, 'image': article['image']})
                 except:
                     print("Error loading article: " + article['title'])
 
@@ -43,6 +47,24 @@ class Webscrape:
         chow_collection_urls = self.chow_collection_scraper()
         urls = mastering_bitcoin_urls + chow_collection_urls + nakamoto_urls
         return urls
+
+    def clean_text(self, text):
+        # Remove newlines
+        text = text.replace('\n', ' ')
+        # Filter out any string with more than one white space in between characters
+        re.sub(" +", ' ', text)
+        # Remove all non ascii chars
+        stripped_text = text.encode("ascii", "ignore")
+        stripped_text = stripped_text.decode()
+        # Filter out if it is not a string or it is empty
+        if not str(text) or text == None:
+            return False
+        # Filter out any string with more whitespaces than chars
+        num_of_letters = len(stripped_text) - stripped_text.count(" ")
+        if stripped_text.count(" ") < num_of_letters:
+            return stripped_text
+        else:
+            return False
 
     def mastering_bitcoin_scraper(self):
         articles = []
