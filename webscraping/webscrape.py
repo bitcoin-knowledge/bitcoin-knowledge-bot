@@ -31,7 +31,7 @@ class Webscrape:
                     for section in text_content:
                         cleaned_text = self.clean_text(section.text)
                         if cleaned_text == False:
-                            pass
+                            break
                         formated_data.append({'title': article['title'], 'url': article['url'], 'body': cleaned_text, 'image': article['image']})
                 except:
                     print("Error loading article: " + article['title'])
@@ -61,10 +61,13 @@ class Webscrape:
             return False
         # Filter out any string with more whitespaces than chars
         num_of_letters = len(stripped_text) - stripped_text.count(" ")
-        if stripped_text.count(" ") < num_of_letters:
-            return stripped_text
-        else:
+        if stripped_text.count(" ") > num_of_letters:
             return False
+
+        if len(stripped_text) <= 40:
+            return False
+        
+        return stripped_text
 
     def mastering_bitcoin_scraper(self):
         articles = []
