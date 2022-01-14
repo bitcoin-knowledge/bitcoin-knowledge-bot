@@ -5,3 +5,6 @@ pydantic==1.8.2
 python-dotenv==0.19.2
 selenium==3.141.0
 uvicorn==0.12.3
+spacy==3.2.0
+spacy-legacy==3.0.8
+spacy-loggers==1.
