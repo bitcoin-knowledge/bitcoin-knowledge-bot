@@ -4,19 +4,49 @@ import psutil
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.neighbors import NearestNeighbors
 import warnings
+from app.get_path import get_project_root
 warnings.filterwarnings("ignore")
 
-data_path = '/Users/pretermodernist/coding-projects/bitcoin-knowledge-bot/datasets/knowledge_datasets/bitcoin_knowledge_regexed_2022-01-14-1806.json'
 
+def suggest_article(user_input):
+    root = get_project_root()
+    data_path = f"{root}/datasets/knowledge_datasets/bitcoin_knowledge_regexed_2022-01-15-1144.json"
 
-
-cores = psutil.cpu_count()
-cores_used = int(cores/3)
-vect = TfidfVectorizer(
+    cores = psutil.cpu_count()
+    cores_used = int(cores/3)
+    vect = TfidfVectorizer(
                        stop_words='english',
                        ngram_range=(1, 2),
                        max_features=10000
                        )
+
+    btc = wrangle_jsonl(data_path)
+    btc_knn = pd.DataFrame(btc['body'])
+    ## USER INPUT EXAMPLE ##
+    # Swapping this out later for user-submitted inquiry to GPT3 chatbot
+
+    btc_knn.loc[len(btc_knn.index)] = user_input
+    dtm = vect.fit_transform(btc_knn['body'])
+    dtm = pd.DataFrame(dtm.toarray(), columns=vect.get_feature_names())
+    nn = NearestNeighbors(
+        n_neighbors = 25,
+        algorithm = 'ball_tree',
+        n_jobs = cores_used
+        )
+
+    nn.fit(dtm)
+
+    doc_index = -1
+    doc = [dtm.iloc[doc_index].values]
+    neigh_dist, neigh_index = nn.kneighbors(doc)
+    for doc in neigh_index:
+        recommendation = btc_knn.iloc[doc]
+
+    suggestion = return_suggestion(recommendation, btc)
+    print(suggestion)
+    
+    return suggestion
+
 # Reading in our bitcoin data from a json lines file with a reproducible function
 
 
@@ -42,29 +72,6 @@ def wrangle_jsonl(path: str):
 
     return df
 
-btc = wrangle_jsonl(data_path)
-btc_knn = pd.DataFrame(btc['body'])
-## USER INPUT EXAMPLE ##
-# Swapping this out later for user-submitted inquiry to GPT3 chatbot
-user_input = ["What's the blockchain?"]
-
-btc_knn.loc[len(btc_knn.index)] = user_input
-dtm = vect.fit_transform(btc_knn['body'])
-dtm = pd.DataFrame(dtm.toarray(), columns=vect.get_feature_names())
-nn = NearestNeighbors(
-    n_neighbors = 25,
-    algorithm = 'ball_tree',
-    n_jobs = cores_used
-    )
-
-nn.fit(dtm)
-
-doc_index = -1
-doc = [dtm.iloc[doc_index].values]
-neigh_dist, neigh_index = nn.kneighbors(doc)
-for doc in neigh_index:
-    recommendation = btc_knn.iloc[doc]
-
 def return_suggestion(recommendation, btc):
     '''
     Returns a pandas dataframe row containing an article suggestion from a mapped k-NN index
@@ -81,6 +88,3 @@ def return_suggestion(recommendation, btc):
     '''
     knn_recommendation = btc[btc["body"].str.contains(recommendation.iloc[1].values[0])==True]
     return knn_recommendation
-
-suggestion = return_suggestion(recommendation, btc)
-print(suggestion)

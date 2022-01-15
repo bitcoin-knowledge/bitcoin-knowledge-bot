@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from app.bot import ask
+from app.article_suggestion import suggest_article
 
 class ChatLog(BaseModel):
     chat_log: str
@@ -30,4 +31,10 @@ def run():
 @app.post("/ask")
 def ask_bot(log: ChatLog):
     answer = ask(log.chat_log)
-    return answer
+    articles = suggest_article(log.chat_log)
+    predictions = {
+        "answer": answer,
+        "articles": [articles]
+    }
+
+    return predictions
