@@ -13,6 +13,7 @@ const Chatbot = () => {
   const [loading, setLoading] = useState(false)
   const [id, setId] = useState(4)
   const [collapsed, setCollapsed] = useState(false);
+  const [articles, setArticles] = useState([])
   const [messages, setMessages] = useState([
     {
         id: 1,
@@ -54,13 +55,14 @@ const Chatbot = () => {
     if (lastMessage && lastMessage.name === 'User') {
       setLoading(true)
       const log = formatChatLog()
-      axios.post("https://bitcoin-knowledge-bot.herokuapp.com/ask", {chat_log: log})
+      axios.post("http://127.0.0.1:8000/ask", {chat_log: log})
       .then(response => {
         setTimeout(() => {
           setId(id + 1)
+          setArticles(response.data.articles)
           setMessages([...messages, {
             id: id,
-            text: response.data,
+            text: response.data.answer,
             name: "Bot"
           }])
           setLoading(false)
@@ -117,7 +119,7 @@ const Chatbot = () => {
         </ChatButtonContainer>
       </ChatForm>
     </ChatWindow>
-    <ArticleSuggestion setCollapsed={setCollapsed} collapsed={collapsed} loading={loading} />
+    <ArticleSuggestion articles={articles} setCollapsed={setCollapsed} collapsed={collapsed} loading={loading} />
     </div>
   )
 }

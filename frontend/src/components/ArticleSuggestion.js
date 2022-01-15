@@ -7,28 +7,28 @@ import {FaChevronDown, FaChevronUp} from 'react-icons/fa';
 import { v4 as uuidv4 } from 'uuid';
 import './Chatbot.css'
 
-const ArticleSuggestion = ({loading, collapsed, setCollapsed}) => {
+const ArticleSuggestion = ({articles, loading, collapsed, setCollapsed}) => {
     const scrollComponentStyles = {
         paddingRight: '1%',
     }
 
-    const articles = [
-        {
-            link: 'https://nakamotoinstitute.org/bitcoin/',
-            title: 'Bitcoin: A Peer-to-Peer Electronic Cash System',
-            text: "To compensate for increasing hardware speed and varying interest in running nodes over time, the proof-of-work difficulty is determined by a moving average targeting an average number of blocks per hour. If they're generated too fast, the difficulty increases."
-        },
-        {
-            link: 'https://nakamotoinstitute.org/shelling-out/',
-            title: 'Shelling out: The Origins of Money',
-            text: "The precursors of money, along with language, enabled early modern humans to solve problems of cooperation that other animals cannot \u2013 including problems of reciprocal altruism, kin altruism, and the mitigation of aggression. These precursors shared with non-fiat currencies very specific characteristics \u2013 they were not merely symbolic or decorative objects."
-        },
-        {
-            link: 'https://nakamotoinstitute.org/mempool/bitcoin-is-the-great-definancialization/',
-            title: 'Bitcoin is the Great Definancialization',
-            text: "Have you ever had a financial advisor (or maybe even a parent) tell you that you need to make your money grow? This idea has been so hardwired in the minds of hard-working people all over the world that it has become practically second nature to the very idea of work."
-        }
-    ]
+    // const articles = [
+    //     {
+    //         link: 'https://nakamotoinstitute.org/bitcoin/',
+    //         title: 'Bitcoin: A Peer-to-Peer Electronic Cash System',
+    //         text: "To compensate for increasing hardware speed and varying interest in running nodes over time, the proof-of-work difficulty is determined by a moving average targeting an average number of blocks per hour. If they're generated too fast, the difficulty increases."
+    //     },
+    //     {
+    //         link: 'https://nakamotoinstitute.org/shelling-out/',
+    //         title: 'Shelling out: The Origins of Money',
+    //         text: "The precursors of money, along with language, enabled early modern humans to solve problems of cooperation that other animals cannot \u2013 including problems of reciprocal altruism, kin altruism, and the mitigation of aggression. These precursors shared with non-fiat currencies very specific characteristics \u2013 they were not merely symbolic or decorative objects."
+    //     },
+    //     {
+    //         link: 'https://nakamotoinstitute.org/mempool/bitcoin-is-the-great-definancialization/',
+    //         title: 'Bitcoin is the Great Definancialization',
+    //         text: "Have you ever had a financial advisor (or maybe even a parent) tell you that you need to make your money grow? This idea has been so hardwired in the minds of hard-working people all over the world that it has become practically second nature to the very idea of work."
+    //     }
+    // ]
     return (
         <ArticleContainer>
             <ArticleContainerHeader>
@@ -44,7 +44,7 @@ const ArticleSuggestion = ({loading, collapsed, setCollapsed}) => {
                 <CollapsedContainer />
                 :
                 <InfiniteScroll
-                dataLength={articles.length} //This is important field to render the next data
+                dataLength={articles.length || 0} //This is important field to render the next data
                 loader={<h4>Loading...</h4>}
                 height={window.innerWidth > 800 ? 230: 350}
                 style={scrollComponentStyles}
@@ -57,12 +57,20 @@ const ArticleSuggestion = ({loading, collapsed, setCollapsed}) => {
                 </ChatBubbles>
                 :
                 articles.map((article) => {
+                    const body = Object.values(article)[0]
+                    const image = Object.values(article)[1]
+                    const title = Object.values(article)[2]
+                    const url = Object.values(article)[3]
+                    const extracted_body = Object.values(body)[0]
+                    const extracted_image = Object.values(image)[0]
+                    const extracted_title = Object.values(title)[0]
+                    const extracted_url = Object.values(url)[0]
                     return(
                         <Article key={uuidv4()}>
-                        <ArticleTitle>{article.title}</ArticleTitle>
-                        <ArticleText>"{article.text}"</ArticleText>
-                        <ArticleAnchor href={article.link} target="_blank" rel="noreferrer">read</ArticleAnchor>
-                    </Article>
+                            <ArticleTitle>{extracted_title}</ArticleTitle>
+                            <ArticleText>"{extracted_body}"</ArticleText>
+                            <ArticleAnchor href={extracted_url} target="_blank" rel="noreferrer">read</ArticleAnchor>
+                        </Article>
                     )
                 })
                 }
