@@ -33,6 +33,10 @@ const Chatbot = () => {
   ])
 
   useEffect(() => {
+    bottomListRef.current.scrollIntoView({ behavior: 'smooth' });
+  }, [collapsed])
+
+  useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
     }

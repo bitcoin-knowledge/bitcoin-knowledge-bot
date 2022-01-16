@@ -32,6 +32,7 @@ const ArticleSuggestion = ({articles, loading, collapsed, setCollapsed}) => {
     return (
         <ArticleContainer>
             <ArticleContainerHeader>
+                {/* !!!!!!!!!Have collapse event auto scroll down as well!!!!!!!!!! */}
                 <ArticleCollapse onClick={() => setCollapsed(!collapsed)}>
                     {collapsed ? <FaChevronUp /> : <FaChevronDown />}
                 </ArticleCollapse>
