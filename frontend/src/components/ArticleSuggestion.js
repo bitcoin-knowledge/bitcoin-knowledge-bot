@@ -59,13 +59,15 @@ const ArticleSuggestion = ({articles, loading, collapsed, setCollapsed}) => {
                 :
                 articles.map((article) => {
                     const body = Object.values(article)[0]
-                    const image = Object.values(article)[1]
+                    const url = Object.values(article)[1]
                     const title = Object.values(article)[2]
-                    const url = Object.values(article)[3]
+                    const image = Object.values(article)[3]
                     const extracted_body = Object.values(body)[0]
                     const extracted_image = Object.values(image)[0]
                     const extracted_title = Object.values(title)[0]
                     const extracted_url = Object.values(url)[0]
+                    console.log(extracted_url)
+                    console.log(extracted_image)
                     return(
                         <Article key={uuidv4()}>
                             <ArticleTitle>{extracted_title}</ArticleTitle>
