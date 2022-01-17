@@ -86,5 +86,5 @@ def return_suggestion(recommendation, btc):
     knn_recommendation: pandas datafarme row
         Contains title, body, image, and url data from our user submitted queries' nearest neighbor
     '''
-    knn_recommendation = btc[btc["body"].str.contains(recommendation.iloc[1].values[0])==True]
+    knn_recommendation = btc[btc["body"].str.contains(recommendation.iloc[1].values[0])==True].copy()
     return knn_recommendation
