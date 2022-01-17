@@ -58,9 +58,9 @@ const ArticleSuggestion = ({articles, loading, collapsed, setCollapsed}) => {
                 </ChatBubbles>
                 :
                 articles.map((article) => {
-                    const body = Object.values(article)[0]
+                    const title = Object.values(article)[0]
                     const url = Object.values(article)[1]
-                    const title = Object.values(article)[2]
+                    const body = Object.values(article)[2]
                     const image = Object.values(article)[3]
                     const extracted_body = Object.values(body)[0]
                     const extracted_image = Object.values(image)[0]
