@@ -24,7 +24,7 @@ app.add_middleware(
 
 @app.get('/')
 def main():
-    ping_fine_tune_model()
+    # ping_fine_tune_model()
     return "Bot online"
 
 def run():
