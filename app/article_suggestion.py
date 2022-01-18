@@ -4,7 +4,7 @@ import psutil
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.neighbors import NearestNeighbors
 import warnings
-from app.get_path import get_project_root
+from app_utils import get_project_root
 warnings.filterwarnings("ignore")
 
 
