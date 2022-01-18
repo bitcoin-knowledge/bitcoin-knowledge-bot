@@ -66,9 +66,11 @@ const ArticleSuggestion = ({articles, loading, collapsed, setCollapsed}) => {
                     const extracted_image = Object.values(image)[0]
                     const extracted_title = Object.values(title)[0]
                     const extracted_url = Object.values(url)[0]
-                    console.log(extracted_url)
-                    console.log(extracted_image)
+                    console.log(article)
                     return(
+                        articles == [] ?
+                        <h1>Test</h1>
+                        :
                         <Article key={uuidv4()}>
                             <ArticleTitle>{extracted_title}</ArticleTitle>
                             <ArticleText>"{extracted_body}"</ArticleText>
@@ -84,6 +86,52 @@ const ArticleSuggestion = ({articles, loading, collapsed, setCollapsed}) => {
 }
 
 export default ArticleSuggestion;
+
+export const defaultArticle = (setCollapsed, collapsed, loading) => {
+    const article = {
+        url: 'https://nakamotoinstitute.org/bitcoin/',
+        image: "https://nakamotoinstitute.org/static/img/bitcoin/transactions.svg",
+        title: 'Bitcoin: A Peer-to-Peer Electronic Cash System',
+        body: "A purely peer-to-peer version of electronic cash would allow online payments to be sent directly from one party to another without going through a financial institution. Digital signatures provide part of the solution, but the main benefits are lost if a trusted third party is still required to prevent double-spending. We propose a solution to the double-spending problem using a peer-to-peer network. The network timestamps transactions by hashing them into an ongoing chain of hash-based proof-of-work, forming a record that cannot be changed without redoing the proof-of-work. The longest chain not only serves as proof of the sequence of events witnessed, but proof that it came from the largest pool of CPU power. As long as a majority of CPU power is controlled by nodes that are not cooperating to attack the network, they'll generate the longest chain and outpace attackers. The network itself requires minimal structure. Messages are broadcast on a best effort basis, and nodes can leave and rejoin the network at will, accepting the longest proof-of-work chain as proof of what happened while they were gone."
+    }
+    return(
+        <ArticleContainer>
+            <ArticleContainerHeader>
+                <ArticleCollapse onClick={() => setCollapsed(!collapsed)}>
+                    {collapsed ? <FaChevronUp /> : <FaChevronDown />}
+                </ArticleCollapse>
+                <ArticleSuggestionTitle>
+                    Knowledge Suggestions
+                </ArticleSuggestionTitle>
+            </ArticleContainerHeader>
+            {
+                collapsed ? 
+                <CollapsedContainer />
+                :
+                <InfiniteScroll
+                dataLength={0} //This is important field to render the next data
+                loader={<h4>Loading...</h4>}
+                height={window.innerWidth > 800 ? 230: 350}
+                style={{paddingRight: '1%'}}
+                >
+                {
+                    loading 
+                ?
+                <ChatBubbles>
+                    <ReactLoading type={'bubbles'} color={'#f2a900'} height={'10%'} width={'10%'} />
+                </ChatBubbles>
+                :
+                    <Article key={uuidv4()}>
+                        <ArticleTitle>{article.title}</ArticleTitle>
+                        <ArticleText>"{article.body}"</ArticleText>
+                        <ArticleAnchor href={article.url} target="_blank" rel="noreferrer">read</ArticleAnchor>
+                    </Article>
+                }
+            </InfiniteScroll>
+            }
+        </ArticleContainer>
+    )
+}
 
 const ArticleContainer = Styled.div`
     width: 78%;
@@ -203,5 +251,4 @@ const ChatBubbles = Styled.div`
 const CollapsedContainer = Styled.div`
     width: 78%;
     margin: 1% auto;
-    background: #4F6272;
 `;

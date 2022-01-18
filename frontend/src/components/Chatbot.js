@@ -4,6 +4,7 @@ import MessageList from './MessageList';
 import media from '../utils/ComponentBreakpoints'
 import axios from 'axios'
 import ArticleSuggestion from './ArticleSuggestion';
+import { defaultArticle } from './ArticleSuggestion';
 import './Chatbot.css'
 
 const Chatbot = () => {
@@ -123,7 +124,13 @@ const Chatbot = () => {
         </ChatButtonContainer>
       </ChatForm>
     </ChatWindow>
-    <ArticleSuggestion articles={articles} setCollapsed={setCollapsed} collapsed={collapsed} loading={loading} />
+    {
+    articles.length > 0 
+    ?
+      <ArticleSuggestion articles={articles} setCollapsed={setCollapsed} collapsed={collapsed} loading={loading} />
+    : 
+      defaultArticle(setCollapsed, collapsed, loading)
+    }
     </div>
   )
 }
