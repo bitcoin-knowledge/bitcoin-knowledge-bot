@@ -54,7 +54,7 @@ const ArticleSuggestion = ({articles, loading, collapsed, setCollapsed}) => {
                     loading 
                 ?
                 <ChatBubbles>
-                    <ReactLoading type={'bubbles'} color={'#f2a900'} height={'10%'} width={'10%'} />
+                    <ReactLoading type={'spinningBubbles'} color={'#f2a900'} height={'10%'} width={'10%'} />
                 </ChatBubbles>
                 :
                 articles.map((article) => {
@@ -118,7 +118,7 @@ export const defaultArticle = (setCollapsed, collapsed, loading) => {
                     loading 
                 ?
                 <ChatBubbles>
-                    <ReactLoading type={'bubbles'} color={'#f2a900'} height={'10%'} width={'10%'} />
+                    <ReactLoading type={'spinningBubbles'} color={'#f2a900'} height={'10%'} width={'10%'} />
                 </ChatBubbles>
                 :
                     <Article key={uuidv4()}>
