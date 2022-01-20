@@ -37,7 +37,7 @@ const ArticleSuggestion = ({articles, loading, collapsed, setCollapsed}) => {
                     loading 
                 ?
                 <ChatBubbles>
-                    <ReactLoading type={'spinningBubbles'} color={'#f2a900'} height={'10%'} width={'10%'} />
+                    <ReactLoading type={'spinningBubbles'} color={'#f2a900'} height={'8%'} width={'8%'} />
                 </ChatBubbles>
                 :
                 articles.map((article) => {
