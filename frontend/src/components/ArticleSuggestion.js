@@ -229,6 +229,8 @@ const ArticleAnchor = Styled.a`
 const ChatBubbles = Styled.div`
     display: flex;
     justify-content: center;
+    align-items: center;
+    height: 50%;
 `;
 
 const CollapsedContainer = Styled.div`
