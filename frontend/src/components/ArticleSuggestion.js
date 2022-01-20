@@ -12,23 +12,6 @@ const ArticleSuggestion = ({articles, loading, collapsed, setCollapsed}) => {
         paddingRight: '1%',
     }
 
-    // const articles = [
-    //     {
-    //         link: 'https://nakamotoinstitute.org/bitcoin/',
-    //         title: 'Bitcoin: A Peer-to-Peer Electronic Cash System',
-    //         text: "To compensate for increasing hardware speed and varying interest in running nodes over time, the proof-of-work difficulty is determined by a moving average targeting an average number of blocks per hour. If they're generated too fast, the difficulty increases."
-    //     },
-    //     {
-    //         link: 'https://nakamotoinstitute.org/shelling-out/',
-    //         title: 'Shelling out: The Origins of Money',
-    //         text: "The precursors of money, along with language, enabled early modern humans to solve problems of cooperation that other animals cannot \u2013 including problems of reciprocal altruism, kin altruism, and the mitigation of aggression. These precursors shared with non-fiat currencies very specific characteristics \u2013 they were not merely symbolic or decorative objects."
-    //     },
-    //     {
-    //         link: 'https://nakamotoinstitute.org/mempool/bitcoin-is-the-great-definancialization/',
-    //         title: 'Bitcoin is the Great Definancialization',
-    //         text: "Have you ever had a financial advisor (or maybe even a parent) tell you that you need to make your money grow? This idea has been so hardwired in the minds of hard-working people all over the world that it has become practically second nature to the very idea of work."
-    //     }
-    // ]
     return (
         <ArticleContainer>
             <ArticleContainerHeader>
