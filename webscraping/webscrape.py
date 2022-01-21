@@ -19,9 +19,10 @@ class Webscrape:
         }
 
     def generate_data(self):
-        articles = self.get_articles()
-        formated_data = []
-        for article in articles:
+        urls = self.get_article_urls()
+        formated_article_data = []
+        formated_podcast_data = []
+        for article in urls['articles']:
             with webdriver.Firefox() as driver:
                 wait = WebDriverWait(driver, 1)
                 driver.get(article['url'])
@@ -32,20 +33,45 @@ class Webscrape:
                         cleaned_text = self.clean_text(section.text)
                         if cleaned_text == False:
                             break
-                        formated_data.append({'title': article['title'], 'url': article['url'], 'body': cleaned_text, 'image': article['image']})
+                        formated_article_data.append({'title': article['title'], 'url': article['url'], 'body': cleaned_text, 'image': article['image']})
                 except:
                     print("Error loading article: " + article['title'])
 
-        with open('./datasets/knowledge_datasets/bitcoin_knowledge.json', 'w') as outfile:
-            for article in formated_data:
+        for article in urls['podcasts']:
+            with webdriver.Firefox() as driver:
+                wait = WebDriverWait(driver, 1)
+                driver.get(article['url'])
+                wait.until(presence_of_all_elements_located((By.XPATH, "//p")))
+                try:
+                    text_content = driver.find_elements_by_xpath("//p")
+                    for section in text_content:
+                        cleaned_text = self.clean_text(section.text)
+                        if cleaned_text == False:
+                            break
+                        formated_podcast_data.append({'title': article['title'], 'url': article['url'], 'body': cleaned_text, 'image': article['image']})
+                except:
+                    print("Error loading article: " + article['title'])
+
+        with open('./datasets/knowledge_datasets/bitcoin_articles.json', 'w') as outfile:
+            for article in formated_article_data:
                 json.dump(article, outfile)
                 outfile.write('\n')
 
-    def get_articles(self):
+        with open('./datasets/knowledge_datasets/bitcoin_podcasts.json', 'w') as outfile:
+            for article in formated_podcast_data:
+                json.dump(article, outfile)
+                outfile.write('\n')
+
+    def get_article_urls(self):
+        urls = {
+            "articles": [],
+            "podcasts": [],
+        }
         nakamoto_urls = self.nakamoto_institute_scraper()
         mastering_bitcoin_urls = self.mastering_bitcoin_scraper()
         chow_collection_urls = self.chow_collection_scraper()
-        urls = mastering_bitcoin_urls + chow_collection_urls + nakamoto_urls
+        urls['articles'] = mastering_bitcoin_urls + nakamoto_urls
+        urls['podcasts'] = chow_collection_urls
         return urls
 
     def clean_text(self, text):
