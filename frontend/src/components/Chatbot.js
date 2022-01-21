@@ -18,12 +18,12 @@ const Chatbot = () => {
   const [messages, setMessages] = useState([
     {
         id: 1,
-        text: 'Hello World!',
+        text: "Hello World! I'm Bitcoin Knowledge Bot",
         name: "Bot"
     },
     {
         id: 2,
-        text: "I'm Bitcoin Knowledge Bot",
+        text: "I can answer most of your Bitcoin questions, but rembmember I'm just a chatbot so 'Dont trust, verify' and read the knowledge sources on your own and use your discernment",
         name: "Bot"
     },
     {
