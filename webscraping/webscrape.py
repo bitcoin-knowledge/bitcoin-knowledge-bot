@@ -36,6 +36,7 @@ class Webscrape:
                         formated_article_data.append({'title': article['title'], 'url': article['url'], 'body': cleaned_text, 'image': article['image']})
                 except:
                     print("Error loading article: " + article['title'])
+            driver.close()
 
         for article in urls['podcasts']:
             with webdriver.Firefox() as driver:
@@ -132,11 +133,38 @@ class Webscrape:
 
             for article in article_links:
                 driver.get(article)
-                # Want to grab the podcast images eventually if avilable
+                # Want to grab the podcast images eventually if available
                 image = None
                 title = driver.find_element_by_xpath("//h1").text
                 articles.append({'title': title, 'url': article, 'image': image})
             
+        return articles
+
+    def bitcoin_resources_scrape(self):
+        articles = []
+        blacklsited_urls = [
+            "https://github.com/bitcoin-resources/bitcoin-resources.github.io/blob/master/CONTRIBUTING.md", "https://twitter.com/BtcResources",
+            "https://github.com/bitcoin-resources/bitcoin-resources.github.io",
+            "https://dergigi.com/support",
+            "https://www.patreon.com/dergigi",
+            "https://21lessons.com/",
+            "https://www.bitcoin-quotes.com/",
+            "https://opsecswag.com/",
+            "https://dergigi.com/",
+            "https://nakamotoinstitute.org/literature/",
+            "https://anchor.fm/thecryptoconomy",
+            "http://bitcoinrabbithole.org/writings/",
+            "http://21lessons.com/"
+            "https://www.bitcoin-quotes.com/",
+        ]
+        with webdriver.Firefox() as driver:
+            driver.get('https://bitcoin-resources.com/articles/')
+            parent_pages = driver.find_elements_by_xpath("//a[@href]")
+            for page in parent_pages:
+                # ensure the link is an actual article and filter out blacklisted urls
+                if not page.get_attribute("title") and "https://bitcoin-resources.com/" not in page.get_attribute("href") and page.get_attribute("href") not in blacklsited_urls:
+                    articles.append({"title": page.text, "url": page.get_attribute("href")})
+                    
         return articles
 
     def nakamoto_institute_scraper(self):
@@ -180,4 +208,4 @@ class Webscrape:
         return articles
 
 test = Webscrape()
-test.generate_data()
+test.bitcoin_resources_scrape()
