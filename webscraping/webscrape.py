@@ -22,11 +22,13 @@ class Webscrape:
         urls = self.get_article_urls()
         formated_article_data = []
         formated_podcast_data = []
-        for article in urls['articles']:
-            with webdriver.Firefox() as driver:
-                wait = WebDriverWait(driver, 1)
+        # initate the webdriver
+        with webdriver.Firefox() as driver:
+            wait = WebDriverWait(driver, 10)
+            for article in urls['articles']:
                 driver.get(article['url'])
-                wait.until(presence_of_all_elements_located((By.XPATH, "//p")))
+                # Wait for the article to load
+                time.sleep(3)
                 try:
                     text_content = driver.find_elements_by_xpath("//p")
                     for section in text_content:
@@ -34,24 +36,27 @@ class Webscrape:
                         if cleaned_text == False:
                             break
                         formated_article_data.append({'title': article['title'], 'url': article['url'], 'body': cleaned_text, 'image': article['image']})
-                except:
+                except Exception as e:
                     print("Error loading article: " + article['title'])
-            driver.close()
+                    print()
+                    print(e)
 
-        for article in urls['podcasts']:
-            with webdriver.Firefox() as driver:
-                wait = WebDriverWait(driver, 1)
+            for article in urls['podcasts']:
                 driver.get(article['url'])
-                wait.until(presence_of_all_elements_located((By.XPATH, "//p")))
+                # Wait for the article to load
+                time.sleep(3)
                 try:
-                    text_content = driver.find_elements_by_xpath("//p")
-                    for section in text_content:
-                        cleaned_text = self.clean_text(section.text)
+                    body = driver.find_element_by_xpath("/html/body").text.split('\n')
+                    for section in body:
+                        cleaned_text = self.clean_text(section)
                         if cleaned_text == False:
-                            break
-                        formated_podcast_data.append({'title': article['title'], 'url': article['url'], 'body': cleaned_text, 'image': article['image']})
-                except:
+                            pass
+                        else:
+                            formated_podcast_data.append({'title': article['title'], 'url': article['url'], 'body': cleaned_text, 'image': article['image']})
+                except Exception as e:
                     print("Error loading article: " + article['title'])
+                    print()
+                    print(e)
 
         with open('./datasets/knowledge_datasets/bitcoin_articles.json', 'w') as outfile:
             for article in formated_article_data:
@@ -68,17 +73,18 @@ class Webscrape:
             "articles": [],
             "podcasts": [],
         }
+        chow_collection_urls = self.chow_collection_scraper()
         nakamoto_urls = self.nakamoto_institute_scraper()
         mastering_bitcoin_urls = self.mastering_bitcoin_scraper()
-        chow_collection_urls = self.chow_collection_scraper()
-        urls['articles'] = mastering_bitcoin_urls + nakamoto_urls
+        bitcoin_resources_urls = self.bitcoin_resources_scraper()
+        urls['articles'] = mastering_bitcoin_urls + nakamoto_urls + bitcoin_resources_urls
         urls['podcasts'] = chow_collection_urls
         return urls
 
     def clean_text(self, text):
         # Remove newlines
         text = text.replace('\n', ' ')
-        # Filter out any string with more than one white space in between characters
+        # Find any string with more than one white space in between characters and replace with a single space
         re.sub(" +", ' ', text)
         # Remove all non ascii chars
         stripped_text = text.encode("ascii", "ignore")
@@ -112,16 +118,19 @@ class Webscrape:
                 driver.get(article)
                 chapter = driver.find_elements_by_xpath("//h2")
                 articles.append({'title': "Mastering bitcoin - " + chapter[1].text, 'url': article, 'image': mastering_bitcoin_cover})
+            driver.close()
+
         return articles
 
     def chow_collection_scraper(self):
-        article_links = []
         articles = []
         with webdriver.Firefox() as driver:
             wait = WebDriverWait(driver, 10)
             driver.get(self.parent_urls['chow_collection'][0])
-            # Wait for show more button
+            # Wait for page to load
+            time.sleep(3)
             try:
+                # Wait for show more button and click until its gone
                 while driver.find_element_by_xpath("// button[contains(text(),'Show more')]"):
                     driver.find_element_by_xpath("// button[contains(text(),'Show more')]").click()
                     time.sleep(7)
@@ -129,18 +138,12 @@ class Webscrape:
                 wait.until(presence_of_all_elements_located((By.XPATH, "//a[@class='eh bw']")))
                 article_pages = driver.find_elements_by_xpath("//a[@class='eh bw']")
                 for article in article_pages:
-                    article_links.append(article.get_attribute("href"))
+                    articles.append({"title": article.text, "url": article.get_attribute("href"), "image": None})
+            driver.close()
 
-            for article in article_links:
-                driver.get(article)
-                # Want to grab the podcast images eventually if available
-                image = None
-                title = driver.find_element_by_xpath("//h1").text
-                articles.append({'title': title, 'url': article, 'image': image})
-            
         return articles
 
-    def bitcoin_resources_scrape(self):
+    def bitcoin_resources_scraper(self):
         articles = []
         blacklsited_urls = [
             "https://github.com/bitcoin-resources/bitcoin-resources.github.io/blob/master/CONTRIBUTING.md", "https://twitter.com/BtcResources",
@@ -163,8 +166,9 @@ class Webscrape:
             for page in parent_pages:
                 # ensure the link is an actual article and filter out blacklisted urls
                 if not page.get_attribute("title") and "https://bitcoin-resources.com/" not in page.get_attribute("href") and page.get_attribute("href") not in blacklsited_urls:
-                    articles.append({"title": page.text, "url": page.get_attribute("href")})
-                    
+                    articles.append({"title": page.text, "url": page.get_attribute("href"), "image": None})
+            driver.close()
+
         return articles
 
     def nakamoto_institute_scraper(self):
@@ -192,6 +196,7 @@ class Webscrape:
                     for link in anchors:
                         if link.text == "HTML":
                             pages.append(link.get_attribute('href'))
+            driver.close()
 
             for article in pages:
                 with webdriver.Firefox() as driver:
@@ -205,7 +210,8 @@ class Webscrape:
                     }
                     articles.append(obj)
                     driver.close()
+
         return articles
 
 test = Webscrape()
-test.bitcoin_resources_scrape()
+test.generate_data()
