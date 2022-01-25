@@ -26,10 +26,10 @@ class Webscrape:
         with webdriver.Firefox() as driver:
             wait = WebDriverWait(driver, 10)
             for article in urls['articles']:
-                driver.get(article['url'])
-                # Wait for the article to load
-                time.sleep(3)
                 try:
+                    driver.get(article['url'])
+                    # Wait for the article to load
+                    time.sleep(3)
                     text_content = driver.find_elements_by_xpath("//p")
                     for section in text_content:
                         cleaned_text = self.clean_text(section.text)
@@ -40,12 +40,13 @@ class Webscrape:
                     print("Error loading article: " + article['title'])
                     print()
                     print(e)
+                    print("----------------------------------------------------------------------------------------------------")
 
             for article in urls['podcasts']:
-                driver.get(article['url'])
-                # Wait for the article to load
-                time.sleep(3)
                 try:
+                    driver.get(article['url'])
+                    # Wait for the article to load
+                    time.sleep(3)
                     body = driver.find_element_by_xpath("/html/body").text.split('\n')
                     for section in body:
                         cleaned_text = self.clean_text(section)
@@ -57,6 +58,7 @@ class Webscrape:
                     print("Error loading article: " + article['title'])
                     print()
                     print(e)
+                    print("----------------------------------------------------------------------------------------------------")
 
         with open('./datasets/knowledge_datasets/bitcoin_articles.json', 'w') as outfile:
             for article in formated_article_data:
@@ -138,7 +140,8 @@ class Webscrape:
                 wait.until(presence_of_all_elements_located((By.XPATH, "//a[@class='eh bw']")))
                 article_pages = driver.find_elements_by_xpath("//a[@class='eh bw']")
                 for article in article_pages:
-                    articles.append({"title": article.text, "url": article.get_attribute("href"), "image": None})
+                    if article.text not in self.blacklisted_articles:
+                        articles.append({"title": article.text, "url": article.get_attribute("href"), "image": None})
             driver.close()
 
         return articles
