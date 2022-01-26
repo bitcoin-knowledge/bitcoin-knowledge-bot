@@ -31,6 +31,7 @@ class Webscrape:
         # initate the webdriver
         with webdriver.Firefox() as driver:
             for article in urls['articles']:
+                unique = set()
                 try:
                     driver.get(article['url'])
                     # Wait for the article to load
@@ -40,7 +41,10 @@ class Webscrape:
                         cleaned_text = self.clean_text(section)
                         if cleaned_text == False:
                             pass
+                        elif cleaned_text in unique:
+                            pass
                         else:
+                            unique.add(cleaned_text)
                             formated_article_data.append({'title': article['title'], 'url': article['url'], 'body': cleaned_text, 'image': article['image']})
                 except Exception as e:
                     print("Error loading article: " + article['title'])
@@ -49,6 +53,7 @@ class Webscrape:
                     print("----------------------------------------------------------------------------------------------------")
 
             for article in urls['podcasts']:
+                unique = set()
                 try:
                     driver.get(article['url'])
                     # Wait for the article to load
@@ -58,13 +63,17 @@ class Webscrape:
                         cleaned_text = self.clean_text(section)
                         if cleaned_text == False:
                             pass
+                        elif cleaned_text in unique:
+                            pass
                         else:
+                            unique.add(cleaned_text)
                             formated_podcast_data.append({'title': article['title'], 'url': article['url'], 'body': cleaned_text, 'image': article['image']})
                 except Exception as e:
                     print("Error loading article: " + article['title'])
                     print()
                     print(e)
                     print("----------------------------------------------------------------------------------------------------")
+            driver.close()
 
         with open('./datasets/knowledge_datasets/bitcoin_articles.json', 'w') as outfile:
             for article in formated_article_data:
@@ -243,16 +252,21 @@ class Webscrape:
 
             for article in pages:
                 with webdriver.Firefox() as driver:
-                    driver.get(article)
-                    title = driver.find_element_by_xpath("//h1").text
-                    image = driver.find_element_by_xpath("//img").get_attribute("src") if driver.find_element_by_xpath("//img") else None
-                    obj = {
-                        'title': title,
-                        'url': article,
-                        'image': image,
-                    }
-                    articles.append(obj)
-                    driver.close()
+                    try:
+                        driver.get(article)
+                        title = driver.find_element_by_xpath("//h1").text
+                        image = driver.find_element_by_xpath("//img").get_attribute("src") if driver.find_element_by_xpath("//img") else None
+                        obj = {
+                            'title': title,
+                            'url': article,
+                            'image': image,
+                        }
+                        articles.append(obj)
+                        driver.close()
+                    except Exception as e:
+                        print("Error getting article metadata for article: " + article)
+                        print(e)
+
 
         return articles
 
