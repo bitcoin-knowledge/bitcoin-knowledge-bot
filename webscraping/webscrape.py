@@ -16,6 +16,12 @@ class Webscrape:
             'mastering_bitcoin':['https://github.com/bitcoinbook/bitcoinbook/blob/develop/book.asciidoc'],
             'nakamoto_institute':['https://nakamotoinstitute.org/literature/', 'https://nakamotoinstitute.org/research/','https://nakamotoinstitute.org/mempool/'], 
             'chow_collection': ['https://chowcollection.medium.com'],
+            'bitcoin_resources': ['https://bitcoin-resources.com/articles/'],
+            'bitcoiner_guide': [
+                "https://bitcoiner.guide/wallet/", 
+                "https://github.com/BitcoinQnA/BitcoinPrivacyGuide/blob/master/index.md", 
+                "https://bitcoiner.guide/qna/"
+            ],
         }
 
     def generate_data(self):
@@ -24,18 +30,18 @@ class Webscrape:
         formated_podcast_data = []
         # initate the webdriver
         with webdriver.Firefox() as driver:
-            wait = WebDriverWait(driver, 10)
             for article in urls['articles']:
                 try:
                     driver.get(article['url'])
                     # Wait for the article to load
                     time.sleep(3)
-                    text_content = driver.find_elements_by_xpath("//p")
-                    for section in text_content:
-                        cleaned_text = self.clean_text(section.text)
+                    body = driver.find_element_by_xpath("/html/body").text.split('\n')
+                    for section in body:
+                        cleaned_text = self.clean_text(section)
                         if cleaned_text == False:
-                            break
-                        formated_article_data.append({'title': article['title'], 'url': article['url'], 'body': cleaned_text, 'image': article['image']})
+                            pass
+                        else:
+                            formated_article_data.append({'title': article['title'], 'url': article['url'], 'body': cleaned_text, 'image': article['image']})
                 except Exception as e:
                     print("Error loading article: " + article['title'])
                     print()
@@ -79,7 +85,8 @@ class Webscrape:
         nakamoto_urls = self.nakamoto_institute_scraper()
         mastering_bitcoin_urls = self.mastering_bitcoin_scraper()
         bitcoin_resources_urls = self.bitcoin_resources_scraper()
-        urls['articles'] = mastering_bitcoin_urls + nakamoto_urls + bitcoin_resources_urls
+        bitcoiner_guide_urls = self.bitcoiner_guide_scraper()
+        urls['articles'] = bitcoin_resources_urls + bitcoiner_guide_urls + mastering_bitcoin_urls + nakamoto_urls
         urls['podcasts'] = chow_collection_urls
         return urls
 
@@ -164,13 +171,46 @@ class Webscrape:
             "https://www.bitcoin-quotes.com/",
         ]
         with webdriver.Firefox() as driver:
-            driver.get('https://bitcoin-resources.com/articles/')
+            driver.get(self.parent_urls['bitcoin_resources'][0])
             parent_pages = driver.find_elements_by_xpath("//a[@href]")
             for page in parent_pages:
                 # ensure the link is an actual article and filter out blacklisted urls
                 if not page.get_attribute("title") and "https://bitcoin-resources.com/" not in page.get_attribute("href") and page.get_attribute("href") not in blacklsited_urls:
                     articles.append({"title": page.text, "url": page.get_attribute("href"), "image": None})
             driver.close()
+
+        return articles
+
+    def bitcoiner_guide_scraper(self):
+        articles = []
+        bitcoin_wallet_guide = self.parent_urls['bitcoiner_guide'][0]
+        bitcoin_privacy_guide = self.parent_urls['bitcoiner_guide'][1]
+        bitcoin_qna = self.parent_urls['bitcoiner_guide'][2]
+        for parent_page in self.parent_urls['bitcoiner_guide']:
+            with webdriver.Firefox() as driver:
+                if parent_page == bitcoin_wallet_guide:
+                    driver.get(parent_page)
+                    pages = driver.find_elements_by_xpath("//a[@href]")
+                    for page in pages:
+                        if "/wallet/" in page.get_attribute("href"):
+                            articles.append({"title": "Bitcoin Wallet Guide " + page.text, "url": page.get_attribute("href"), "image": None})
+                elif parent_page == bitcoin_privacy_guide:
+                    driver.get(parent_page)
+                    pages = driver.find_elements_by_xpath("//a[@href]")
+                    for page in pages:
+                        if '.md' in page.get_attribute("href") and '/index' not in page.get_attribute("href") and '/login' not in page.get_attribute("href"):
+                            clean_endpoint = page.get_attribute("href").split("/")[-1]
+                            correct_endpoint = clean_endpoint.replace(".md", "")
+                            articles.append({"title": "Bitcoin Privacy Guide " + page.text, "url": "https://bitcoiner.guide/privacy/" + correct_endpoint, "image": None})
+                elif parent_page == bitcoin_qna:
+                    blacklisted_pages = ['Graphics', 'Recommendations', 'Education']
+                    driver.get(parent_page)
+                    pages = driver.find_elements_by_xpath("//a[@href]")
+                    for page in pages:
+                        parent_elem = page.find_element_by_xpath('..')
+                        if '/qna/' in page.get_attribute("href") and page.text not in blacklisted_pages and parent_elem.tag_name == 'td':
+                            articles.append({"title": "Bitcoin QnA " + page.text, "url": page.get_attribute("href"), "image": None})
+                driver.close()
 
         return articles
 
@@ -189,7 +229,7 @@ class Webscrape:
                     anchors = driver.find_elements_by_xpath("//a[@href]")
                     for link in anchors:
                         # Avoid blacklisted urls and links to the series pages
-                        if link.get_attribute('href') in blacklisted_pages or 'https://nakamotoinstitute.org/mempool/series/' in link.get_attribute('href'):
+                        if link.get_attribute('href') in blacklisted_pages or 'https://nakamotoinstitute.org/mempool/series/' == link.get_attribute('href'):
                             pass
                         elif 'https://nakamotoinstitute.org/mempool/' in link.get_attribute('href'):
                             pages.append(link.get_attribute('href'))
