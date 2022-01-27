@@ -3,6 +3,7 @@ import os
 import openai
 import json
 from dotenv import load_dotenv
+from app.app_utils import get_project_root
 
 class OpenAIConnector:
     def __init__(self, token: str, filepath: str, model_name: str):
@@ -14,7 +15,7 @@ class OpenAIConnector:
         load_dotenv()
         openai.api_key = os.getenv("OPENAI_API_KEY")
         openai.File.create(
-        file=open(self.prepared_filepath),
+        file=open(self.filepath),
         purpose='fine-tune'
         )
         openai_file_list = openai.File.list()
@@ -27,6 +28,7 @@ class OpenAIConnector:
 
     def create_fine_tune_model(self):
         load_dotenv()
+        openai.api_key = os.getenv("OPENAI_API_KEY")
         openai_training_file = os.getenv("TRAINING_FILE")
         openai.FineTune.create(training_file=openai_training_file, model="curie", n_epochs=5)
 

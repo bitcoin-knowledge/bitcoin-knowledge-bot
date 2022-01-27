@@ -37,6 +37,7 @@ class Webscrape:
                     # Wait for the article to load
                     time.sleep(3)
                     body = driver.find_element_by_xpath("/html/body").text.split('\n')
+                    self.generate_gpt3_dataset(body)
                     for section in body:
                         cleaned_text = self.clean_text(section)
                         if cleaned_text == False:
@@ -59,6 +60,7 @@ class Webscrape:
                     # Wait for the article to load
                     time.sleep(3)
                     body = driver.find_element_by_xpath("/html/body").text.split('\n')
+                    self.generate_gpt3_dataset(body)
                     for section in body:
                         cleaned_text = self.clean_text(section)
                         if cleaned_text == False:
@@ -75,15 +77,15 @@ class Webscrape:
                     print("----------------------------------------------------------------------------------------------------")
             driver.close()
 
-        with open('./datasets/knowledge_datasets/bitcoin_articles.json', 'w') as outfile:
-            for article in formated_article_data:
-                json.dump(article, outfile)
-                outfile.write('\n')
+        # with open('./datasets/knowledge_datasets/bitcoin_articles.json', 'w') as outfile:
+        #     for article in formated_article_data:
+        #         json.dump(article, outfile)
+        #         outfile.write('\n')
 
-        with open('./datasets/knowledge_datasets/bitcoin_podcasts.json', 'w') as outfile:
-            for article in formated_podcast_data:
-                json.dump(article, outfile)
-                outfile.write('\n')
+        # with open('./datasets/knowledge_datasets/bitcoin_podcasts.json', 'w') as outfile:
+        #     for article in formated_podcast_data:
+        #         json.dump(article, outfile)
+        #         outfile.write('\n')
 
     def get_article_urls(self):
         urls = {
@@ -119,6 +121,28 @@ class Webscrape:
             return False
         
         return stripped_text
+
+    def generate_gpt3_dataset(self, prompts):
+        openai_data = []
+        for count in range(len(prompts)):
+            # Only create the object every other iteration
+            if count % 2 == 0:
+                prompt_text = prompts[count-1]
+                completion_text = prompts[count]
+                cleaned_prompt = self.clean_text(prompt_text)
+                cleaned_completion = self.clean_text(completion_text)
+                if cleaned_prompt != False and cleaned_completion != False:
+                    j = {
+                        "prompt": f"{prompt_text}\n\n###\n\n",
+                        "completion": " " + completion_text
+                    }
+                    openai_data.append(j)
+
+        with open('./datasets/openai_datasets/bitcoin_chatbot_training_data.jsonl', 'a') as outfile:    
+            for obj in openai_data:
+                json.dump(obj, outfile)
+                outfile.write('\n')
+
 
     def mastering_bitcoin_scraper(self):
         articles = []
