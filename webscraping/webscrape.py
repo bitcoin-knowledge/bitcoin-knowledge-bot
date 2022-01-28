@@ -17,6 +17,7 @@ class Webscrape:
             'nakamoto_institute':['https://nakamotoinstitute.org/literature/', 'https://nakamotoinstitute.org/research/','https://nakamotoinstitute.org/mempool/'], 
             'chow_collection': ['https://chowcollection.medium.com'],
             'bitcoin_resources': ['https://bitcoin-resources.com/articles/'],
+            "bitcoin_wiki": ['https://en.bitcoin.it/wiki/Main_Page'],
             'bitcoiner_guide': [
                 "https://bitcoiner.guide/wallet/", 
                 "https://github.com/BitcoinQnA/BitcoinPrivacyGuide/blob/master/index.md", 
@@ -31,13 +32,15 @@ class Webscrape:
         # initate the webdriver
         with webdriver.Firefox() as driver:
             for article in urls['articles']:
+                print(article)
                 unique = set()
                 try:
                     driver.get(article['url'])
                     # Wait for the article to load
                     time.sleep(3)
                     body = driver.find_element_by_xpath("/html/body").text.split('\n')
-                    self.generate_gpt3_dataset(body)
+                    if article['chatbot'] == True:
+                        self.generate_gpt3_dataset(body)
                     for section in body:
                         cleaned_text = self.clean_text(section)
                         if cleaned_text == False:
@@ -60,7 +63,6 @@ class Webscrape:
                     # Wait for the article to load
                     time.sleep(3)
                     body = driver.find_element_by_xpath("/html/body").text.split('\n')
-                    self.generate_gpt3_dataset(body)
                     for section in body:
                         cleaned_text = self.clean_text(section)
                         if cleaned_text == False:
@@ -77,10 +79,10 @@ class Webscrape:
                     print("----------------------------------------------------------------------------------------------------")
             driver.close()
 
-        # with open('./datasets/knowledge_datasets/bitcoin_articles.json', 'w') as outfile:
-        #     for article in formated_article_data:
-        #         json.dump(article, outfile)
-        #         outfile.write('\n')
+        with open('./datasets/knowledge_datasets/bitcoin_articles.json', 'w') as outfile:
+            for article in formated_article_data:
+                json.dump(article, outfile)
+                outfile.write('\n')
 
         # with open('./datasets/knowledge_datasets/bitcoin_podcasts.json', 'w') as outfile:
         #     for article in formated_podcast_data:
@@ -92,13 +94,14 @@ class Webscrape:
             "articles": [],
             "podcasts": [],
         }
-        chow_collection_urls = self.chow_collection_scraper()
+        # chow_collection_urls = self.chow_collection_scraper()
         nakamoto_urls = self.nakamoto_institute_scraper()
         mastering_bitcoin_urls = self.mastering_bitcoin_scraper()
         bitcoin_resources_urls = self.bitcoin_resources_scraper()
         bitcoiner_guide_urls = self.bitcoiner_guide_scraper()
-        urls['articles'] = bitcoin_resources_urls + bitcoiner_guide_urls + mastering_bitcoin_urls + nakamoto_urls
-        urls['podcasts'] = chow_collection_urls
+        bitcoin_wiki_urls = self.bitcoin_wiki_scraper()
+        urls['articles'] = bitcoin_resources_urls + bitcoiner_guide_urls + mastering_bitcoin_urls + nakamoto_urls + bitcoin_wiki_urls
+        # urls['podcasts'] = chow_collection_urls
         return urls
 
     def clean_text(self, text):
@@ -109,6 +112,9 @@ class Webscrape:
         # Remove all non ascii chars
         stripped_text = text.encode("ascii", "ignore")
         stripped_text = stripped_text.decode()
+        # strip out links from each string
+        regex_pattern = "(http|ftp|https):\/\/([\w\-_]+(?:(?:\.[\w\-_]+)+))([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?"
+        stripped_text = re.sub(rf"{regex_pattern}", '', stripped_text)
         # Filter out if it is not a string or it is empty
         if not str(text) or text == None:
             return False
@@ -159,7 +165,7 @@ class Webscrape:
             for article in parent_articles:
                 driver.get(article)
                 chapter = driver.find_elements_by_xpath("//h2")
-                articles.append({'title': "Mastering bitcoin - " + chapter[1].text, 'url': article, 'image': mastering_bitcoin_cover})
+                articles.append({'title': "Mastering bitcoin - " + chapter[1].text, 'url': article, 'image': mastering_bitcoin_cover, "chatbot": True})
             driver.close()
 
         return articles
@@ -181,7 +187,7 @@ class Webscrape:
                 article_pages = driver.find_elements_by_xpath("//a[@class='eh bw']")
                 for article in article_pages:
                     if article.text not in self.blacklisted_articles:
-                        articles.append({"title": article.text, "url": article.get_attribute("href"), "image": None})
+                        articles.append({"title": article.text, "url": article.get_attribute("href"), "image": None, "chatbot": False})
             driver.close()
 
         return articles
@@ -209,7 +215,7 @@ class Webscrape:
             for page in parent_pages:
                 # ensure the link is an actual article and filter out blacklisted urls
                 if not page.get_attribute("title") and "https://bitcoin-resources.com/" not in page.get_attribute("href") and page.get_attribute("href") not in blacklsited_urls:
-                    articles.append({"title": page.text, "url": page.get_attribute("href"), "image": None})
+                    articles.append({"title": page.text, "url": page.get_attribute("href"), "image": None, "chatbot": False})
             driver.close()
 
         return articles
@@ -242,8 +248,21 @@ class Webscrape:
                     for page in pages:
                         parent_elem = page.find_element_by_xpath('..')
                         if '/qna/' in page.get_attribute("href") and page.text not in blacklisted_pages and parent_elem.tag_name == 'td':
-                            articles.append({"title": "Bitcoin QnA " + page.text, "url": page.get_attribute("href"), "image": None})
+                            articles.append({"title": "Bitcoin QnA " + page.text, "url": page.get_attribute("href"), "image": None, "chatbot": True})
                 driver.close()
+
+        return articles
+
+    def bitcoin_wiki_scraper(self):
+        articles = []
+        pages_to_scrape = ["Introduction", "Myths", "Securing your wallet", "FAQ", "Privacy"]
+        with webdriver.Firefox() as driver:
+            driver.get(self.parent_urls['bitcoin_wiki'][0])
+            pages = driver.find_elements_by_xpath("//a[@href]")
+            for page in pages:
+                if page.text in pages_to_scrape:
+                    articles.append({"title": "Bitcoin Wiki - " + page.text, "url": page.get_attribute("href"), "image": None, "chatbot": True})
+            driver.close()
 
         return articles
 
@@ -284,6 +303,7 @@ class Webscrape:
                             'title': title,
                             'url': article,
                             'image': image,
+                            "chatbot": False
                         }
                         articles.append(obj)
                         driver.close()

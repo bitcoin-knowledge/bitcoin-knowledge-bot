@@ -30,7 +30,7 @@ class OpenAIConnector:
         load_dotenv()
         openai.api_key = os.getenv("OPENAI_API_KEY")
         openai_training_file = os.getenv("TRAINING_FILE")
-        openai.FineTune.create(training_file=openai_training_file, model="curie", n_epochs=5)
+        openai.FineTune.create(training_file=openai_training_file, model="davinci", n_epochs=5)
 
         # print(openai.FineTune.list())
         openai_fine_tune_list = openai.FineTune.list()
