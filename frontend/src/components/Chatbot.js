@@ -23,7 +23,7 @@ const Chatbot = () => {
     },
     {
         id: 2,
-        text: "I can answer most of your Bitcoin questions, but rembmember I'm just a chatbot so 'Dont trust, verify' and read the knowledge sources on your own and use your discernment",
+        text: "I can answer most of your Bitcoin questions, but rembmember I'm just a chatbot so I might say something incorrect so 'Dont trust, but verify' and read the knowledge sources on your own and use your discernment",
         name: "Bot"
     },
     {

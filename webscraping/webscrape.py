@@ -63,6 +63,8 @@ class Webscrape:
                     # Wait for the article to load
                     time.sleep(3)
                     body = driver.find_element_by_xpath("/html/body").text.split('\n')
+                    if article['chatbot'] == True:
+                        self.generate_gpt3_dataset(body)
                     for section in body:
                         cleaned_text = self.clean_text(section)
                         if cleaned_text == False:
@@ -84,24 +86,24 @@ class Webscrape:
                 json.dump(article, outfile)
                 outfile.write('\n')
 
-        # with open('./datasets/knowledge_datasets/bitcoin_podcasts.json', 'w') as outfile:
-        #     for article in formated_podcast_data:
-        #         json.dump(article, outfile)
-        #         outfile.write('\n')
+        with open('./datasets/knowledge_datasets/bitcoin_podcasts.json', 'w') as outfile:
+            for article in formated_podcast_data:
+                json.dump(article, outfile)
+                outfile.write('\n')
 
     def get_article_urls(self):
         urls = {
             "articles": [],
             "podcasts": [],
         }
-        # chow_collection_urls = self.chow_collection_scraper()
+        chow_collection_urls = self.chow_collection_scraper()
         nakamoto_urls = self.nakamoto_institute_scraper()
         mastering_bitcoin_urls = self.mastering_bitcoin_scraper()
         bitcoin_resources_urls = self.bitcoin_resources_scraper()
         bitcoiner_guide_urls = self.bitcoiner_guide_scraper()
         bitcoin_wiki_urls = self.bitcoin_wiki_scraper()
         urls['articles'] = bitcoin_resources_urls + bitcoiner_guide_urls + mastering_bitcoin_urls + nakamoto_urls + bitcoin_wiki_urls
-        # urls['podcasts'] = chow_collection_urls
+        urls['podcasts'] = chow_collection_urls
         return urls
 
     def clean_text(self, text):
@@ -187,7 +189,7 @@ class Webscrape:
                 article_pages = driver.find_elements_by_xpath("//a[@class='eh bw']")
                 for article in article_pages:
                     if article.text not in self.blacklisted_articles:
-                        articles.append({"title": article.text, "url": article.get_attribute("href"), "image": None, "chatbot": False})
+                        articles.append({"title": article.text, "url": article.get_attribute("href"), "image": None, "chatbot": True})
             driver.close()
 
         return articles
@@ -313,6 +315,3 @@ class Webscrape:
 
 
         return articles
-
-test = Webscrape()
-test.generate_data()
