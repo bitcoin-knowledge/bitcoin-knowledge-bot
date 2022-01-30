@@ -6,7 +6,7 @@ def get_project_root() -> Path:
 
 
 def ping_fine_tune_model():
-    url = "https://api.openai.com/v1/fine-tunes/ft-Iid0qFfG44dFyu34vaiM0NJF"
+    url = "https://api.openai.com/v1/fine-tunes/ft-lOxpluhGoMqP3A90PDlzwmTM"
     response = requests.get(url)
     if response.status_code == 200:
         return True
