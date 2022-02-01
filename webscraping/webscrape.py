@@ -49,7 +49,7 @@ class Webscrape:
                             pass
                         else:
                             unique.add(cleaned_text)
-                            formated_article_data.append({'title': article['title'], 'url': article['url'], 'body': cleaned_text, 'image': article['image']})
+                            formated_article_data.append({'title': article['title'], 'url': article['url'], 'body': cleaned_text, 'image': article['image'], "confidence_score": article['confidence_score']})
                 except Exception as e:
                     print("Error loading article: " + article['title'])
                     print()
@@ -73,7 +73,7 @@ class Webscrape:
                             pass
                         else:
                             unique.add(cleaned_text)
-                            formated_podcast_data.append({'title': article['title'], 'url': article['url'], 'body': cleaned_text, 'image': article['image']})
+                            formated_podcast_data.append({'title': article['title'], 'url': article['url'], 'body': cleaned_text, 'image': article['image'], "confidence_score": article['confidence_score']})
                 except Exception as e:
                     print("Error loading article: " + article['title'])
                     print()
@@ -167,7 +167,7 @@ class Webscrape:
             for article in parent_articles:
                 driver.get(article)
                 chapter = driver.find_elements_by_xpath("//h2")
-                articles.append({'title': "Mastering bitcoin - " + chapter[1].text, 'url': article, 'image': mastering_bitcoin_cover, "chatbot": True})
+                articles.append({'title': "Mastering bitcoin - " + chapter[1].text, 'url': article, 'image': mastering_bitcoin_cover, "chatbot": True, "confidence_score": 5})
             driver.close()
 
         return articles
@@ -189,7 +189,7 @@ class Webscrape:
                 article_pages = driver.find_elements_by_xpath("//a[@class='eh bw']")
                 for article in article_pages:
                     if article.text not in self.blacklisted_articles:
-                        articles.append({"title": article.text, "url": article.get_attribute("href"), "image": None, "chatbot": True})
+                        articles.append({"title": article.text, "url": article.get_attribute("href"), "image": None, "chatbot": True, "confidence_score": 1})
             driver.close()
 
         return articles
@@ -217,7 +217,7 @@ class Webscrape:
             for page in parent_pages:
                 # ensure the link is an actual article and filter out blacklisted urls
                 if not page.get_attribute("title") and "https://bitcoin-resources.com/" not in page.get_attribute("href") and page.get_attribute("href") not in blacklsited_urls:
-                    articles.append({"title": page.text, "url": page.get_attribute("href"), "image": None, "chatbot": False})
+                    articles.append({"title": page.text, "url": page.get_attribute("href"), "image": None, "chatbot": False, "confidence_score": 2})
             driver.close()
 
         return articles
@@ -250,7 +250,7 @@ class Webscrape:
                     for page in pages:
                         parent_elem = page.find_element_by_xpath('..')
                         if '/qna/' in page.get_attribute("href") and page.text not in blacklisted_pages and parent_elem.tag_name == 'td':
-                            articles.append({"title": "Bitcoin QnA " + page.text, "url": page.get_attribute("href"), "image": None, "chatbot": True})
+                            articles.append({"title": "Bitcoin QnA " + page.text, "url": page.get_attribute("href"), "image": None, "chatbot": True, "confidence_score": 4})
                 driver.close()
 
         return articles
@@ -263,7 +263,7 @@ class Webscrape:
             pages = driver.find_elements_by_xpath("//a[@href]")
             for page in pages:
                 if page.text in pages_to_scrape:
-                    articles.append({"title": "Bitcoin Wiki - " + page.text, "url": page.get_attribute("href"), "image": None, "chatbot": True})
+                    articles.append({"title": "Bitcoin Wiki - " + page.text, "url": page.get_attribute("href"), "image": None, "chatbot": True, "confidence_score": 5})
             driver.close()
 
         return articles
@@ -305,7 +305,8 @@ class Webscrape:
                             'title': title,
                             'url': article,
                             'image': image,
-                            "chatbot": False
+                            "chatbot": False,
+                            "confidence_score": 3
                         }
                         articles.append(obj)
                         driver.close()
@@ -315,3 +316,6 @@ class Webscrape:
 
 
         return articles
+
+test = Webscrape()
+test.generate_data()
