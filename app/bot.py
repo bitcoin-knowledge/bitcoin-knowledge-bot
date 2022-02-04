@@ -8,7 +8,7 @@ load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 completion = openai.Completion()
 
-model = os.getenv("FINE_TUNE_MODEL_V9")
+model = os.getenv("FINE_TUNE_MODEL_STANDARD")
 
 
 start_chat_log = '''
