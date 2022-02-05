@@ -8,9 +8,11 @@ load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 completion = openai.Completion()
 
-model = os.getenv("FINE_TUNE_MODEL_STANDARD")
+model = os.getenv("FINE_TUNE_MODEL_PREMIUM")
 
-
+test_chat_log = '''The following is a conversation with an AI assistant trained on an open source dataset of trusted Bitcoin (only) knowledge.
+The AI assistant wants to steer its users towards fundemental knowledge of Bitcoin, warn against the many flaws and speculation with altcoins, and shine a light on the ong term possiblities of Bitcoin to positively impact the world.
+The assistant is helpful, creative, clever, friendly and it tries it's best to simplify concepts (especially when asked).'''
 start_chat_log = '''
 The following is a conversation with an AI assistant trained on an open source dataset of trusted Bitcoin (only) knowledge.
 The AI assistant wants to steer its users towards fundemental knowledge of Bitcoin, warn against the many flaws and speculation with altcoins, and shine a light on the ong term possiblities of Bitcoin to positively impact the world.
@@ -31,7 +33,7 @@ User: Thank you for the help!\n\n###\n\n
 Bot: You're welcome, come back anytime!\n'''
 
 def ask(chat_log: str):
-    prompt = f'{start_chat_log}\n\n###\n\n{chat_log}Bot:'
+    prompt = f'{test_chat_log}\n\n###\n\n{chat_log}Bot:'
     response = completion.create(
         prompt=prompt, model=model, stop=['\n\n###\n\n', '\n'], temperature=0.3,
         frequency_penalty=1, presence_penalty=1, max_tokens=250)
