@@ -6,7 +6,7 @@ import Chatbot from './components/Chatbot';
 import './index.css';
 
 function App() {
-  const [botStatus, setBotStatus] = useState('Offline');
+  const [botStatus, setBotStatus] = useState('Loading...');
   
   useEffect(() => {
     axios.get("https://bitcoin-knowledge-bot.herokuapp.com/")
@@ -23,7 +23,7 @@ return (
         <Header>
             <HeaderTitle>Bitcoin Knowledge Bot</HeaderTitle>
             Status:
-            <span style={botStatus === 'Offline' ? {color: "red", textDecoration: "underline"} : {color: "green", textDecoration: "underline"}}>{botStatus}</span>
+            <span style={botStatus === 'Loading...' ? {color: "red", textDecoration: "underline"} : {color: "green", textDecoration: "underline"}}>{botStatus}</span>
             <HeaderBody>
                 <p>A question & answer AI bot that also suggests articles/podcasts <br/> Powered by GPT-3 and trained on an open source dataset of established Bitcoin knowledge</p>
                 <HeaderSection>
