@@ -35,7 +35,7 @@ Bot: You're welcome, come back anytime!\n'''
 def ask(chat_log: str):
     prompt = f'{test_chat_log}\n\n###\n\n{chat_log}Bot:'
     response = completion.create(
-        prompt=prompt, model=model, stop=['\n\n###\n\n', '\n'], temperature=0.3,
+        prompt=prompt, model=model, stop=['\n\n###\n\n', '\n'], temperature=0.4,
         frequency_penalty=1, presence_penalty=1, max_tokens=250)
     answer = response.choices[0].text.strip()
     
