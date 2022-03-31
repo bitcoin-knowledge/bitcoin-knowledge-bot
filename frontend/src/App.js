@@ -28,10 +28,10 @@ return (
                 <p>A question & answer AI bot that also suggests articles/podcasts <br/> Powered by GPT-3 and trained on an open source dataset of established Bitcoin knowledge</p>
                 <HeaderSection>
                     <div className="content__item">
-                        <a href="https://github.com/AustinKelsay/bitcoin-chatbot-gpt3" target="_blank" rel="noreferrer"><button className="button button--pandora"><span>code</span></button></a>
+                        <a href="https://github.com/bitcoin-knowledge/bitcoin-knowledge-bot" target="_blank" rel="noreferrer"><button className="button button--pandora"><span>code</span></button></a>
                     </div>
                     <div className="content__item">
-                        <a href="https://github.com/AustinKelsay/bitcoin-chatbot-gpt3/tree/main/datasets" target="_blank" rel="noreferrer"><button className="button button--pandora"><span>datasets</span></button></a>
+                        <a href="https://github.com/bitcoin-knowledge/bitcoin-knowledge-bot/tree/main/datasets" target="_blank" rel="noreferrer"><button className="button button--pandora"><span>datasets</span></button></a>
                     </div>
                 </HeaderSection>
             </HeaderBody>
