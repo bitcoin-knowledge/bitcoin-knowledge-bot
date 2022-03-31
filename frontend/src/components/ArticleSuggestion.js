@@ -84,7 +84,7 @@ export const defaultArticle = (setCollapsed, collapsed, loading) => {
                     {collapsed ? <FaChevronUp /> : <FaChevronDown />}
                 </ArticleCollapse>
                 <ArticleSuggestionTitle>
-                    Knowledge Suggestions
+                    article suggestion coming soon...
                 </ArticleSuggestionTitle>
             </ArticleContainerHeader>
             {
@@ -94,7 +94,7 @@ export const defaultArticle = (setCollapsed, collapsed, loading) => {
                 <InfiniteScroll
                 dataLength={0} //This is important field to render the next data
                 loader={<h4>Loading...</h4>}
-                height={window.innerWidth > 800 ? 230: 350}
+                height={window.innerWidth > 800 ? 230: 340}
                 style={{paddingRight: '1%'}}
                 >
                 {
