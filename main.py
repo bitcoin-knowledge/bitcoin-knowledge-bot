@@ -11,7 +11,8 @@ class ChatLog(BaseModel):
 origins = [
     "http://localhost:3000",
     "https://bitcoin-knowledge-bot.vercel.app",
-    "http://localhost:19006"
+    "http://localhost:19006",
+    "http://localhost:19002"
 ]
 
 app = FastAPI()
