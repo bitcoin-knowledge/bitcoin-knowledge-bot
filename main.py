@@ -22,7 +22,6 @@ app.add_middleware(
     allow_origins=origins,
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
-    allow_methods=["*"],
 )
 
 @app.get('/')
