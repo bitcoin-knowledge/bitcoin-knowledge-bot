@@ -1,3 +1,4 @@
+import json
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -42,3 +43,16 @@ def ask_bot(log: ChatLog):
     }
 
     return predictions
+
+@app.get("/knowledge")
+def get_knowledge():
+    unique = set()
+    articles = []
+    with open("./datasets/knowledge_datasets/bitcoin_articles.json", "r") as f:
+        for obj in f:
+            line = json.loads(obj)
+            if line["title"] not in unique:
+                unique.add(line["title"])
+                articles.append(line)
+
+    return articles
