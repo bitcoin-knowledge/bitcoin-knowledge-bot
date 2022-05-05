@@ -61,5 +61,9 @@ def get_knowledge():
             if line["title"] not in unique:
                 unique.add(line["title"])
                 podcasts.append(line)
+    data = {
+        "articles": articles,
+        "podcasts": podcasts
+    }
 
-    return articles, podcasts
+    return data
