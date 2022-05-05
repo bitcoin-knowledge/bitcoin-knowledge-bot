@@ -4,6 +4,7 @@ import re
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
+from PIL import Image
 from selenium.webdriver.support.expected_conditions import presence_of_all_elements_located, presence_of_element_located
 
 class Webscrape:
@@ -15,7 +16,7 @@ class Webscrape:
         self.parent_urls = {
             'mastering_bitcoin':['https://github.com/bitcoinbook/bitcoinbook/blob/develop/book.asciidoc'],
             'nakamoto_institute':['https://nakamotoinstitute.org/literature/', 'https://nakamotoinstitute.org/research/','https://nakamotoinstitute.org/mempool/'], 
-            'chow_collection': ['https://chowcollection.medium.com'],
+            'chow_collection': ['https://chowcollection.medium.com/list/bitcoin-podcast-transcripts-3ea3c0ba08e0'],
             'bitcoin_resources': ['https://bitcoin-resources.com/articles/'],
             "bitcoin_wiki": ['https://en.bitcoin.it/wiki/Main_Page'],
             'bitcoiner_guide': [
@@ -49,7 +50,7 @@ class Webscrape:
                             pass
                         else:
                             unique.add(cleaned_text)
-                            formated_article_data.append({'title': article['title'], 'url': article['url'], 'body': cleaned_text, 'image': article['image'], "confidence_score": article['confidence_score']})
+                            formated_article_data.append({'title': article['title'], 'url': article['url'], 'body': cleaned_text, 'image': article['image'], "type": "article"})
                 except Exception as e:
                     print("Error loading article: " + article['title'])
                     print()
@@ -73,7 +74,7 @@ class Webscrape:
                             pass
                         else:
                             unique.add(cleaned_text)
-                            formated_podcast_data.append({'title': article['title'], 'url': article['url'], 'body': cleaned_text, 'image': article['image'], "confidence_score": article['confidence_score']})
+                            formated_podcast_data.append({'title': article['title'], 'url': article['url'], 'body': cleaned_text, 'image': article['image'], "type": "podcast"})
                 except Exception as e:
                     print("Error loading article: " + article['title'])
                     print()
@@ -179,17 +180,21 @@ class Webscrape:
             driver.get(self.parent_urls['chow_collection'][0])
             # Wait for page to load
             time.sleep(3)
-            try:
-                # Wait for show more button and click until its gone
-                while driver.find_element_by_xpath("// button[contains(text(),'Show more')]"):
-                    driver.find_element_by_xpath("// button[contains(text(),'Show more')]").click()
-                    time.sleep(7)
-            except:
-                wait.until(presence_of_all_elements_located((By.XPATH, "//a[@class='eh bw']")))
-                article_pages = driver.find_elements_by_xpath("//a[@class='eh bw']")
-                for article in article_pages:
-                    if article.text not in self.blacklisted_articles:
-                        articles.append({"title": article.text, "url": article.get_attribute("href"), "image": None, "chatbot": True, "confidence_score": 1})
+            # Wait for show more button and click until its gone
+            while True:
+                driver.execute_script("window.scrollBy(0,document.body.scrollHeight)")
+                time.sleep(3)
+                if driver.find_elements_by_xpath("//h2[contains(text(),'AH & Deater')]"):
+                    break
+            # while driver.find_element_by_xpath("// button[contains(text(),'Show more')]"):
+            #     driver.find_element_by_xpath("// button[contains(text(),'Show more')]").click()
+            #     time.sleep(7)
+
+            # Get all the articles
+            article_pages = driver.find_elements_by_xpath("//a[@aria-label='Post Preview Title']")
+            for article in article_pages:
+                if article.text not in self.blacklisted_articles:
+                    articles.append({"title": article.text, "url": article.get_attribute("href"), "image": None, "chatbot": True, "confidence_score": 1})
             driver.close()
 
         return articles
