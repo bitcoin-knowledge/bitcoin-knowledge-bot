@@ -54,5 +54,11 @@ def get_knowledge():
             if line["title"] not in unique:
                 unique.add(line["title"])
                 articles.append(line)
+    with open("./datasets/knowledge_datasets/bitcoin_podcasts.json", "r") as f:
+        for obj in f:
+            line = json.loads(obj)
+            if line["title"] not in unique:
+                unique.add(line["title"])
+                articles.append(line)
 
     return articles
