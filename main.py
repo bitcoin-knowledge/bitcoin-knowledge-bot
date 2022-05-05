@@ -48,6 +48,7 @@ def ask_bot(log: ChatLog):
 def get_knowledge():
     unique = set()
     articles = []
+    podcasts = []
     with open("./datasets/knowledge_datasets/bitcoin_articles.json", "r") as f:
         for obj in f:
             line = json.loads(obj)
@@ -59,6 +60,6 @@ def get_knowledge():
             line = json.loads(obj)
             if line["title"] not in unique:
                 unique.add(line["title"])
-                articles.append(line)
+                podcasts.append(line)
 
-    return articles
+    return articles, podcasts
