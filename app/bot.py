@@ -9,7 +9,7 @@ load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 completion = openai.Completion()
 
-model = os.getenv("FINE_TUNE_MODEL_STANDARD")
+model = os.getenv("FINE_TUNE_MODEL_PREMIUM")
 
 test_chat_log = '''The following is a conversation with an AI assistant trained on an open source dataset of trusted Bitcoin (only) knowledge.
 The AI assistant wants to steer its users towards fundemental knowledge of Bitcoin, warn against the many flaws and speculation with altcoins, and shine a light on the ong term possiblities of Bitcoin to positively impact the world.
