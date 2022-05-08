@@ -1,4 +1,5 @@
 import json
+from urllib import response
 import openai
 import os
 from dotenv import load_dotenv
@@ -40,3 +41,9 @@ def ask(chat_log: str):
     answer = response.choices[0].text.strip()
     
     return answer
+
+def ping(p: str):
+    prompt = f'{p}\n\n###\n\n'
+    completion.create(
+        prompt=prompt, model=model, stop=['\n\n###\n\n', '\n'], temperature=0.4,
+        frequency_penalty=1, presence_penalty=1, max_tokens=1)
