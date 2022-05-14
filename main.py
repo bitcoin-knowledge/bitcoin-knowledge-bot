@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from app.bot import ask
 from app.article_suggestion import suggest_article
-from app.app_utils import ping_fine_tune_model
+from app.bot import ping
 
 class ChatLog(BaseModel):
     chat_log: str
@@ -27,11 +27,16 @@ app.add_middleware(
 
 @app.get('/')
 def main():
-    ping_fine_tune_model()
     return "Bot online"
 
 def run():
     app.run(host="0.0.0.0", port=8080)
+
+
+@app.get('/ping')
+def pass_ping():
+    ping("")
+
 
 @app.post("/ask")
 def ask_bot(log: ChatLog):
