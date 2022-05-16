@@ -110,6 +110,7 @@ def get_recommendations(df, column, value, cosine_similarities, limit=10):
 def return_suggestion(recommendations, btcc):
     recommendations = recommendations.rename(columns = {'recommendation': 'title'})                                  
     recommendationsss = recommendations.merge(btcc, on=["index", "title"], how="left", sort=False)
+    recommendationsss = recommendationsss.to_dict('records')
     return recommendationsss
 
 
