@@ -40,24 +40,12 @@ const ArticleSuggestion = ({articles, loading, collapsed, setCollapsed}) => {
                     <ReactLoading type={'spinningBubbles'} color={'#f2a900'} height={'8%'} width={'8%'} />
                 </ChatBubbles>
                 :
-                articles.map((article) => {
-                    const title = Object.values(article)[0]
-                    const url = Object.values(article)[1]
-                    const body = Object.values(article)[2]
-                    const image = Object.values(article)[3]
-                    const extracted_body = Object.values(body)[0]
-                    const extracted_image = Object.values(image)[0]
-                    const extracted_title = Object.values(title)[0]
-                    const extracted_url = Object.values(url)[0]
-                    console.log(article)
+                articles.slice(0,3).map((article) => {
                     return(
-                        articles == [] ?
-                        <h1>Test</h1>
-                        :
                         <Article key={uuidv4()}>
-                            <ArticleTitle>{extracted_title}</ArticleTitle>
-                            <ArticleText>"{extracted_body}"</ArticleText>
-                            <ArticleAnchor href={extracted_url} target="_blank" rel="noreferrer">read</ArticleAnchor>
+                            <ArticleTitle>{article.title}</ArticleTitle>
+                            <ArticleText>"{article.body}"</ArticleText>
+                            <ArticleAnchor href={article.url} target="_blank" rel="noreferrer">read</ArticleAnchor>
                         </Article>
                     )
                 })
