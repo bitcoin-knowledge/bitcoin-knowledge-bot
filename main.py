@@ -42,10 +42,10 @@ def pass_ping():
 def ask_bot(log: ChatLog):
     question = log.chat_log.split('###')[-1]
     answer = ask(log.chat_log)
-    articles = suggest_article(question)
+    # articles = suggest_article(question)
     predictions = {
         "answer": answer,
-        "articles": articles
+        "articles": []
     }
 
     return predictions
