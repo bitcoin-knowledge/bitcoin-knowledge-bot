@@ -120,7 +120,7 @@ def suggest_article(user_input):
     "Main Function"
 
     root = get_project_root()
-    data_path = f"{root}/datasets/knowledge_datasets/bitcoin_knowledge_regexed_2022-05-14-1718.json"
+    data_path = f"{root}/datasets/knowledge_datasets/bitcoin_articles.json"
 
     btc = wrangle_jsonl(data_path)
     btc2 = userinput(user_input, btc)
