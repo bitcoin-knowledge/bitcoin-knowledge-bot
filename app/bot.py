@@ -1,4 +1,4 @@
-import json
+import requests
 from urllib import response
 import openai
 import os
@@ -47,6 +47,13 @@ def ask(chat_log: str):
     answer = response.choices[0].text.strip()
     
     return answer
+
+def suggest_article(question: str):
+    req = {"question": question}
+    articles = requests.post('http://bitcoin-knowledge-suggestions.herokuapp.com/suggest_article', data=req)
+    articles = articles.json()
+    print(articles)
+    return articles
 
 def ping(p: str):
     prompt = f'{p}\n\n###\n\n'

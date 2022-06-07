@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from app.bot import ask
-from app.article_suggestion import suggest_article
+from app.bot import suggest_article
 from app.bot import ping
 
 class ChatLog(BaseModel):
@@ -44,12 +44,12 @@ def ask_bot(log: ChatLog):
     question = log.chat_log.split('###')[-1]
     answer = ask(log.chat_log)
     # articles = suggest_article(question)
-    predictions = {
-        "answer": answer,
-        "articles": []
-    }
+    # predictions = {
+    #     "answer": answer,
+    #     "articles": articles
+    # }
 
-    return predictions
+    return answer
 
 @app.get("/knowledge")
 def get_knowledge():
